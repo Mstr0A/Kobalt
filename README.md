@@ -66,7 +66,7 @@ fun main() {
 }
 ```
 
-Replace `YOUR_BOT_TOKEN` with your actual token and adjust the prefix as desired.
+Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
 
 ---
 
