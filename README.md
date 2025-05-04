@@ -4,11 +4,6 @@
 
 ---
 
-A Kotlin wrapper for the Java Discord API (JDA) offering a concise, DSL‑style interface for building Discord bots with
-minimal boilerplate. Leverage Kotlin’s extension functions, lambda builders, and coroutine support to streamline event
-handling, command registration, and asynchronous workflows, while retaining full access to JDA internals for advanced
-use cases.
-
 > **Note:** Kobalt is in early stages and there are still some things to keep note of:
 > * Kobalt is not on Maven Central as of now
 > * There is still no documentation
