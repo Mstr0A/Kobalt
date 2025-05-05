@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -96,22 +97,40 @@ open class A0Bot(
         val slashCommandsList = CommandDispatcher.getCommands()
 
         val commandsToAdd = slashCommandsList
-            .filter { slashCommand -> slashCommand.type != CommandType.PREFIX }
+            .filter { it.type != CommandType.PREFIX }
             .map { slashCommand ->
-                val commandWithOptions = Commands.slash(slashCommand.name, slashCommand.description)
+                val slashData = Commands.slash(slashCommand.name, slashCommand.description)
+
                 slashCommand.args.forEach { arg ->
-                    commandWithOptions.addOption(
-                        arg.type,
-                        arg.name,
-                        arg.description,
-                        arg.required,
-                        arg.autoCompleteOptions.isNotEmpty()
-                    )
+                    if (arg.autoCompleteOptions.isNotEmpty()) {
+                        val optionData = OptionData(
+                            arg.type,
+                            arg.name,
+                            arg.description,
+                            arg.required
+                        )
+                        arg.autoCompleteOptions.forEach { choice ->
+                            optionData.addChoice(
+                                choice,
+                                choice.lowercase()
+                            )
+                        }
+                        slashData.addOptions(optionData)
+                    } else {
+                        slashData.addOption(
+                            arg.type,
+                            arg.name,
+                            arg.description,
+                            arg.required
+                        )
+                    }
                 }
-                commandWithOptions
+                slashData
             }
 
-        management.updateCommands().addCommands(commandsToAdd).queue()
+        management.updateCommands()
+            .addCommands(commandsToAdd)
+            .queue()
     }
 
 //////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
