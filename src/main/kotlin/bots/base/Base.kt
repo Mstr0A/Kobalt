@@ -1,7 +1,7 @@
 package com.a0.kobalt.bots.base
 
-import com.a0.kobalt.bots.sharded.A0ShardedBot
-import com.a0.kobalt.bots.standard.A0Bot
+import com.a0.kobalt.bots.sharded.KShardedBot
+import com.a0.kobalt.bots.standard.KBot
 import com.a0.kobalt.shared.commands.CommandGroup
 import com.a0.kobalt.shared.commands.CommandMeta
 import com.a0.kobalt.shared.dispatcher.CommandDispatcher
@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * The base class of [A0Bot] and [A0ShardedBot]
+ * The base class of [KBot] and [KShardedBot]
  *
  * *CAN NOT AND SHOULD NOT BE USED IN BUILDS*
  */
-abstract class A0Base(
+abstract class KBase(
     token: String,
     intents: Array<GatewayIntent>,
     val prefix: String,
