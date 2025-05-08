@@ -41,11 +41,11 @@ repositories {
 
 
 // Centralize the version management
-val jdaVersion: String = "5.4.0"
+val jdaVersion: String = "5.5.1"
 val utilsVersion: String = "2.1"
-val loggingVersion: String = "7.0.4"
+val loggingVersion: String = "7.0.7"
 val loggingAPIVersion: String = "2.0.17"
-val logbackVersion: String = "1.5.16"
+val logbackVersion: String = "1.5.18"
 
 
 dependencies {
@@ -56,11 +56,10 @@ dependencies {
 
     /* Internal dependencies */
     implementation("pw.chew:jda-chewtils:$utilsVersion")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-    implementation(kotlin("reflect"))
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$loggingVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation(kotlin("reflect"))
 
     /* Testing */
     testImplementation(kotlin("test"))
