@@ -18,17 +18,17 @@
 
 ## Overview
 
-### Why Kobalt Was Made
+#### Why Kobalt Was Made
 
 - Kobalt was created as a Kotlin wrapper for JDA to provide a friendlier syntax and simplify the process of building
   Discord bots. It leverages the power of JDA while making it more accessible and intuitive for Kotlin developers and
   other developers coming from other languages.
 
-### Core Features
+#### Core Features
 
 - Basically every feature the JDA API provides will be provided here
 
-### Ease of Use
+#### Ease of Use
 
 - Kobalt offers an easy-to-follow design, making it easy to make commands and make control flow simple with our
   annotation
