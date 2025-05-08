@@ -32,18 +32,20 @@ repositories {
     maven { url = uri("https://m2.chew.pro/releases") }
 }
 
-val jdaVersion: String = "5.4.0"
-val utilsVersion: String = "2.1"
-val loggingVersion: String = "7.0.4"
-val loggingAPIVersion: String = "2.0.17"
-val logbackVersion: String = "1.5.16"
-
 
 ////////////////////////////////////
 //                                //
 //    Dependency Configuration    //
 //                                //
 ////////////////////////////////////
+
+
+// Centralize the version management
+val jdaVersion: String = "5.4.0"
+val utilsVersion: String = "2.1"
+val loggingVersion: String = "7.0.4"
+val loggingAPIVersion: String = "2.0.17"
+val logbackVersion: String = "1.5.16"
 
 
 dependencies {
@@ -73,6 +75,7 @@ dependencies {
 
 
 tasks {
+    // Have shadowJar setup just in case
     shadowJar {
         archiveBaseName.set("Kobalt")
         archiveVersion.set(project.version.toString())
@@ -93,6 +96,7 @@ tasks {
 ////////////////////////////////////
 
 
+// Currently only publish to maven local
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
