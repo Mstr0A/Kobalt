@@ -36,6 +36,23 @@
 
 ---
 
+## Features
+
+- **Simple Yet Powerful**: Easily create Discord bots with a clean and intuitive syntax, combining the power of JDA and
+  the simplicity you love.
+- **Inspired by the Best**: Annotation-based command system inspired by the
+  popular [discord.py](https://github.com/Rapptz/discord.py), making command creation effortless.
+- **Event-Driven Framework**: Seamlessly respond to real-time events and interactions with an efficient and reliable
+  system.
+- **Fully Customizable**: Tailor your bot's behavior, commands, and settings to your liking with flexible options.
+- **Smart Error Handling**: Gracefully manage errors to keep your bot running smoothly without interruptions.
+- **Scalable and Modular**: Designed to grow with your bot, whether you're adding new features or scaling up.
+- **Modern Slash Commands**: Full support for Discord's slash commands, providing a sleek and interactive user
+  experience.
+- **Developer Tools Built-In**: Includes advanced logging and utilities to streamline your development process.
+
+---
+
 ## Installation
 
 Since Kobalt isn’t on Maven Central yet, you have to add it to mavenLocal and use it from there: <br>
@@ -107,23 +124,6 @@ fun main() {
 ```
 
 Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
-
----
-
-## Features
-
-- **Simple Yet Powerful**: Easily create Discord bots with a clean and intuitive syntax, combining the power of JDA and
-  the simplicity you love.
-- **Inspired by the Best**: Annotation-based command system inspired by the
-  popular [discord.py](https://github.com/Rapptz/discord.py), making command creation effortless.
-- **Event-Driven Framework**: Seamlessly respond to real-time events and interactions with an efficient and reliable
-  system.
-- **Fully Customizable**: Tailor your bot's behavior, commands, and settings to your liking with flexible options.
-- **Smart Error Handling**: Gracefully manage errors to keep your bot running smoothly without interruptions.
-- **Scalable and Modular**: Designed to grow with your bot, whether you're adding new features or scaling up.
-- **Modern Slash Commands**: Full support for Discord's slash commands, providing a sleek and interactive user
-  experience.
-- **Developer Tools Built-In**: Includes advanced logging and utilities to streamline your development process.
 
 ---
 
