@@ -5,10 +5,10 @@ import com.a0.kobalt.bots.standard.KBot
 import com.a0.kobalt.shared.commands.CommandGroup
 import com.a0.kobalt.shared.commands.CommandMeta
 import com.a0.kobalt.shared.dispatcher.CommandDispatcher
+import com.a0.kobalt.shared.dispatcher.EventWaiter
 import com.a0.kobalt.shared.exceptions.CommandException
 import com.a0.kobalt.shared.exceptions.CommandFailedException
 import com.a0.kobalt.shared.exceptions.CommandNotFoundException
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
