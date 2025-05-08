@@ -14,7 +14,13 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.function.Predicate
 
-
+/**
+ * A 1 to 1 Port of the JDA-Chewtils eventWaiter in Kotlin for Kobalt
+ *
+ * (Meant to reduce bloat and reduce compilation steps since chewtils is on a custom repo)
+ *
+ * Massive shout-outs to Chew
+ */
 class EventWaiter : EventListener {
     private val waitingEvents: MutableMap<Class<*>, MutableSet<WaitingEvent<*>>> = HashMap()
     private val threadpool: ScheduledExecutorService
