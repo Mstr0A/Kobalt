@@ -80,6 +80,10 @@ tasks {
         archiveVersion.set(project.version.toString())
         archiveClassifier.set("")
         manifest.attributes["Main-Class"] = "com.a0.kobalt.MainKt"
+
+        exclude(
+            "logback.xml"
+        )
     }
 
     test {
