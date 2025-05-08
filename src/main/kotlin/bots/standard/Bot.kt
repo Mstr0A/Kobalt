@@ -1,6 +1,6 @@
 package com.a0.kobalt.bots.standard
 
-import com.a0.kobalt.bots.base.A0Base
+import com.a0.kobalt.bots.base.KBase
 import com.a0.kobalt.shared.commands.CommandType
 import com.a0.kobalt.shared.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.JDA
@@ -13,14 +13,14 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-open class A0Bot(
+open class KBot(
     token: String,
     val intents: Array<GatewayIntent>,
     prefix: String,
     botTimeZone: String = "UTC",
-    private val onReady: ((A0Bot) -> Unit)? = null,
-    private val onShutdown: ((A0Bot) -> Unit)? = null,
-) : A0Base(token, intents, prefix, botTimeZone) {
+    private val onReady: ((KBot) -> Unit)? = null,
+    private val onShutdown: ((KBot) -> Unit)? = null,
+) : KBase(token, intents, prefix, botTimeZone) {
     private val jdaBuilder: JDABuilder = JDABuilder.createDefault(token)
     private lateinit var builtBot: JDA
     override val management: JDA

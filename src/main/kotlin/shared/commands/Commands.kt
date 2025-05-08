@@ -1,11 +1,11 @@
 package com.a0.kobalt.shared.commands
 
-import com.a0.kobalt.bots.base.A0Base
+import com.a0.kobalt.bots.base.KBase
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 // To inherit from to make sure all commands have access to the bot
-open class CommandGroup(bot: A0Base) {
+open class CommandGroup(bot: KBase) {
     open fun onReady() {}
 }
 

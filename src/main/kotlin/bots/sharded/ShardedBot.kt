@@ -1,6 +1,6 @@
 package com.a0.kobalt.bots.sharded
 
-import com.a0.kobalt.bots.base.A0Base
+import com.a0.kobalt.bots.base.KBase
 import com.a0.kobalt.shared.commands.CommandType
 import com.a0.kobalt.shared.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -13,15 +13,15 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-open class A0ShardedBot(
+open class KShardedBot(
     token: String,
     val intents: Array<GatewayIntent>,
     val shardCount: Int = -1,
     prefix: String,
     botTimeZone: String = "UTC",
-    private val onReady: ((A0ShardedBot) -> Unit)? = null,
-    private val onShutdown: ((A0ShardedBot) -> Unit)? = null
-) : A0Base(token, intents, prefix, botTimeZone) {
+    private val onReady: ((KShardedBot) -> Unit)? = null,
+    private val onShutdown: ((KShardedBot) -> Unit)? = null
+) : KBase(token, intents, prefix, botTimeZone) {
     private val jdaShardedBuilder: DefaultShardManagerBuilder = DefaultShardManagerBuilder.createDefault(token)
     private lateinit var builtBot: ShardManager
     override val management: ShardManager

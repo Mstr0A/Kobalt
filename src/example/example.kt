@@ -1,6 +1,6 @@
 package com.a0.kobalt
 
-import com.a0.kobalt.bots.standard.A0Bot
+import com.a0.kobalt.bots.standard.KBot
 import com.a0.kobalt.shared.commands.Command
 import com.a0.kobalt.shared.commands.CommandGroup
 import com.a0.kobalt.shared.commands.SlashCommand
@@ -23,8 +23,8 @@ class TestBot(
     intents: Array<GatewayIntent>,
     prefix: String,
     botTimeZone: String = "UTC",
-    onReady: ((A0Bot) -> Unit)? = null
-) : A0Bot(token, intents, prefix, botTimeZone, onReady) {
+    onReady: ((KBot) -> Unit)? = null
+) : KBot(token, intents, prefix, botTimeZone, onReady) {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         println("${event.author.name}: ${event.message.contentRaw}")
@@ -62,7 +62,7 @@ class TestBot(
 }
 
 
-class Testing(val bot: A0Bot) : CommandGroup(bot) {
+class Testing(val bot: KBot) : CommandGroup(bot) {
     @Command(
         "Prefix",
         aliases = ["thefix", "smth"],

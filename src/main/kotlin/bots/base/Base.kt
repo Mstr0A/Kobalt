@@ -1,14 +1,14 @@
 package com.a0.kobalt.bots.base
 
-import com.a0.kobalt.bots.sharded.A0ShardedBot
-import com.a0.kobalt.bots.standard.A0Bot
+import com.a0.kobalt.bots.sharded.KShardedBot
+import com.a0.kobalt.bots.standard.KBot
 import com.a0.kobalt.shared.commands.CommandGroup
 import com.a0.kobalt.shared.commands.CommandMeta
 import com.a0.kobalt.shared.dispatcher.CommandDispatcher
+import com.a0.kobalt.shared.dispatcher.EventWaiter
 import com.a0.kobalt.shared.exceptions.CommandException
 import com.a0.kobalt.shared.exceptions.CommandFailedException
 import com.a0.kobalt.shared.exceptions.CommandNotFoundException
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * The base class of [A0Bot] and [A0ShardedBot]
+ * The base class of [KBot] and [KShardedBot]
  *
  * *CAN NOT AND SHOULD NOT BE USED IN BUILDS*
  */
-abstract class A0Base(
+abstract class KBase(
     token: String,
     intents: Array<GatewayIntent>,
     val prefix: String,

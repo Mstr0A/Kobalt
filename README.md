@@ -4,17 +4,86 @@
 
 ---
 
-> **Note:** Kobalt is in early stages and there are still some things to keep note of:
-> * Kobalt is not on Maven Central as of now
-> * There is still no documentation
-> * Kobalt does not cover the JDA API completely, that's still getting worked on, but it will be slow as I'm a one-man
-    team
+> **Note:** Kobalt is still in its early stages, and there are a few things to keep in mind:
+>
+> * Kobalt is **not yet available on Maven Central** – please follow the [Installation](#Installation) instructions to
+    get started.
+> * **Documentation is currently missing**, but it's on the roadmap.
+> * **JDA API support is not complete yet.** I'm actively working on it, but since this is still a **solo project**,
+    progress can be a bit slow. I'm planning to build a team in the future to help move things along.
+>
+> If you're interested in contributing or helping out, feel free to reach out [here](mailto:kobalt@ameensonjuq.com)!
+
+---
+
+## Overview
+
+#### Why Kobalt Was Made
+
+- Kobalt was created as a Kotlin wrapper for JDA to provide a friendlier syntax and simplify the process of building
+  Discord bots. It leverages the power of JDA while making it more accessible and intuitive for Kotlin developers and
+  other developers coming from other languages.
+
+#### Core Features
+
+- Basically every feature the JDA API provides will be provided here
+
+#### Ease of Use
+
+- Kobalt offers an easy-to-follow design, making it easy to make commands and make control flow simple with our
+  annotation
+  based commands.
+
+---
+
+## Features
+
+- **Simple Yet Powerful**: Easily create Discord bots with a clean and intuitive syntax, combining the power of JDA and
+  the simplicity you love.
+- **Inspired by the Best**: Annotation-based command system inspired by the
+  popular [discord.py](https://github.com/Rapptz/discord.py), making command creation effortless.
+- **Event-Driven Framework**: Seamlessly respond to real-time events and interactions with an efficient and reliable
+  system.
+- **Fully Customizable**: Tailor your bot's behavior, commands, and settings to your liking with flexible options.
+- **Smart Error Handling**: Gracefully manage errors to keep your bot running smoothly without interruptions.
+- **Scalable and Modular**: Designed to grow with your bot, whether you're adding new features or scaling up.
+- **Modern Slash Commands**: Full support for Discord's slash commands, providing a sleek and interactive user
+  experience.
+- **Developer Tools Built-In**: Includes advanced logging and utilities to streamline your development process.
 
 ---
 
 ## Installation
 
-Since Kobalt isn’t on Maven Central yet, you have to compile it and add it manually to your project
+Since Kobalt isn’t on Maven Central yet, you have to add it to mavenLocal and use it from there: <br>
+<sub> (Don't worry, it's easy) </sub>
+
+1. Clone the project with
+
+    ```bash
+    git clone https://github.com/Mstr0A/Kobalt.git
+    ```
+
+2. Open the project in your editor (Preferably IntelliJ)
+
+3. Run
+
+    ```bash
+    .\gradlew publishToMavenLocal
+    ```
+
+4. You're done! All you have to do now is add it to your next project's Gradle build file
+
+    ```kt
+    repositories {
+        mavenCentral()
+        mavenLocal() // **Make sure to add this since it's on Local**
+    }
+    
+    dependencies {
+        implementation("com.a0:Kobalt:0.0.1")
+    }
+    ```
 
 ---
 
@@ -23,14 +92,7 @@ Since Kobalt isn’t on Maven Central yet, you have to compile it and add it man
 A quick example bot to get you running quickly:
 
 ```kt
-import com.a0.kobalt.bots.standard.A0Bot
-import com.a0.kobalt.shared.commands.CommandGroup
-import com.a0.kobalt.shared.commands.SlashCommand
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.requests.GatewayIntent
-
-
-class MyGroup(val bot: A0Bot) : CommandGroup(bot) {
+class MyGroup(val bot: KBot) : CommandGroup(bot) {
     @SlashCommand(
         name = "ping"
     )
@@ -40,41 +102,28 @@ class MyGroup(val bot: A0Bot) : CommandGroup(bot) {
 }
 
 fun main() {
-    val token = "YOUR_TOKEN"
-    val prefix = "!"
-
     val intents = arrayOf(
         GatewayIntent.GUILD_MEMBERS,
         GatewayIntent.MESSAGE_CONTENT,
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.GUILD_MESSAGE_REACTIONS,
     )
-    val bot = A0Bot(
-        token = token,
+    val bot = KBot(
+        token = "YOUR_TOKEN",
         intents = intents,
-        prefix = prefix,
-        botTimeZone = "Asia/Amman",
+        prefix = "!",
+        botTimeZone = "UTC",
         onReady = { bot ->
             bot.logger.info { "${bot.management.selfUser.name} is ready!" }
         }
     )
     bot.registerCommands(MyGroup(bot))
-
     bot.ownerID = "YOUR_ID"
-
     bot.startBot()
 }
 ```
 
 Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
-
----
-
-## Features
-
-* **An easy to read and write syntax**: The power of JDA with a really simple to work with syntax
-* **Annotation based commands**: Make commands of any type with an easy annotation based system (inspired
-  by [discord.py](https://github.com/Rapptz/discord.py))
 
 ---
 
