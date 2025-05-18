@@ -45,7 +45,7 @@ abstract class KBase(
 
     private val taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    protected abstract var isShuttingDown: AtomicBoolean
+    protected var isShuttingDown = AtomicBoolean(false)
 
 //////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
