@@ -27,6 +27,19 @@ open class KShardedBot(
         get() = if (::builtBot.isInitialized) builtBot
         else throw IllegalStateException("Management is not initialized")
 
+    /**
+     *  Disables the Kobalt shutdown hook, setting this to false will break the
+     *  onShutdown functionality, it also keeps the JDA shutdown hook disabled.
+     *
+     *  <b>DO NOT TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING</b>
+     *
+     *  @param state
+     *         The state of the shutdown hook
+     */
+    fun setShutdownHook(state: Boolean) {
+        setShutdownHook = state
+    }
+
     override fun ready() {
         onReady?.invoke(this)
     }

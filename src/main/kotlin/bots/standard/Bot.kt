@@ -26,6 +26,19 @@ open class KBot(
         get() = if (::builtBot.isInitialized) builtBot
         else throw IllegalStateException("Management is not initialized")
 
+    /**
+     *  Disables the Kobalt shutdown hook, setting this to false will break the
+     *  onShutdown functionality, it also keeps the JDA shutdown hook disabled.
+     *
+     *  <b>DO NOT TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING</b>
+     *
+     *  @param state
+     *         The state of the shutdown hook
+     */
+    fun setShutdownHook(state: Boolean) {
+        setShutdownHook = state
+    }
+
     override fun ready() {
         onReady?.invoke(this)
     }
@@ -57,13 +70,15 @@ open class KBot(
     }
 
     override fun startBot() {
-        Runtime.getRuntime().addShutdownHook(Thread({
-            try {
-                shutdown()
-            } catch (e: Exception) {
-                logger.warn(e) { "onShutdown failed" }
-            }
-        }, "Kobalt Shutdown Hook"))
+        if (setShutdownHook) {
+            Runtime.getRuntime().addShutdownHook(Thread({
+                try {
+                    shutdown()
+                } catch (e: Exception) {
+                    logger.warn(e) { "onShutdown failed" }
+                }
+            }, "Kobalt Shutdown Hook"))
+        }
 
         builtBot = jdaBuilder
             .setEnableShutdownHook(false) // No shutdown hook since we have our own
