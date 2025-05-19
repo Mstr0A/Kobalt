@@ -45,7 +45,8 @@ abstract class KBase(
 
     private val taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    protected abstract var isShuttingDown: AtomicBoolean
+    protected var setShutdownHook = true
+    protected var isShuttingDown = AtomicBoolean(false)
 
 //////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
@@ -116,9 +117,9 @@ abstract class KBase(
 
     // Abstract methods that children must implement
     abstract fun startBot()
+    abstract fun shutdown()
 
     // These are protected because they should only be used within the subclass
     protected abstract fun syncSlashCommands()
     protected abstract fun ready()
-    protected abstract fun shutdown()
 }

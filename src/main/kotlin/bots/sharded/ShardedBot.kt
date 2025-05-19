@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 open class KShardedBot(
@@ -28,12 +27,29 @@ open class KShardedBot(
         get() = if (::builtBot.isInitialized) builtBot
         else throw IllegalStateException("Management is not initialized")
 
-    override var isShuttingDown: AtomicBoolean = AtomicBoolean(false)
+    /**
+     *  Disables the Kobalt shutdown hook, setting this to false could mess with onShutdown functionality,
+     *  it also keeps the JDA shutdown hook disabled.
+     *
+     *  <b>DO NOT TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING</b>
+     *
+     *  If you do disable the shutdown hook remember to add a call to [shutdown] at the end of your hook
+     *  to ensure onShutdown and cleanup happens.
+     *
+     *  @param state
+     *         The state of the shutdown hook
+     */
+    fun setShutdownHook(state: Boolean) {
+        setShutdownHook = state
+    }
 
     override fun ready() {
         onReady?.invoke(this)
     }
 
+    /**
+     * Shuts down the bot cleanly, including JDA cleanup and the onShutdown functionality.
+     */
     override fun shutdown() {
         if (isShuttingDown.getAndSet(true)) return
 
@@ -45,17 +61,18 @@ open class KShardedBot(
             Thread.sleep(1000)
 
             // Then proceed with JDA shutdown
-            if (::builtBot.isInitialized) {
-                builtBot.shutdown()
-                builtBot.shards.forEach { shard ->
-                    shard.awaitShutdown(5, TimeUnit.SECONDS)
+            builtBot.shutdown()
+            builtBot.shards.forEach { shard ->
+                if (!shard.awaitShutdown(5, TimeUnit.SECONDS)) {
+                    shard.shutdownNow()
+                    shard.awaitShutdown()
                 }
             }
 
             // Finally stop command tasks
             CommandDispatcher.stopTasks()
         } catch (e: Exception) {
-            logger.error { "Error during shutdown: ${e.message}" }
+            logger.error(e) { "Error during shutdown: ${e.message}" }
             if (::builtBot.isInitialized) {
                 builtBot.shards.forEach { shard ->
                     shard.shutdownNow()
@@ -65,7 +82,16 @@ open class KShardedBot(
     }
 
     override fun startBot() {
+        Runtime.getRuntime().addShutdownHook(Thread({
+            try {
+                shutdown()
+            } catch (e: Exception) {
+                logger.warn(e) { "onShutdown failed" }
+            }
+        }, "Kobalt Shutdown Hook"))
+
         builtBot = jdaShardedBuilder
+            .setEnableShutdownHook(false) // No shutdown hook since we have our own
             .setShardsTotal(shardCount)
             .enableIntents(intents.toSet())
             .addEventListeners(waiter)
@@ -79,26 +105,6 @@ open class KShardedBot(
         syncSlashCommands()
         CommandDispatcher.callGroupOnReady()
         ready()
-
-        val os = System.getProperty("os.name").lowercase()
-        val signals = mutableListOf("INT", "TERM").apply {
-            if (!os.contains("win")) addAll(listOf("HUP", "QUIT"))
-        }
-
-        signals.forEach { sigName ->
-            try {
-                sun.misc.Signal.handle(sun.misc.Signal(sigName)) {
-                    shutdown()
-                }
-            } catch (e: Exception) {
-                logger.warn { "Could not register signal handler for $sigName: ${e.message}" }
-            }
-        }
-
-        // This doesn't work 99.999% of the time, but it's here as a backup
-        Runtime.getRuntime().addShutdownHook(Thread {
-            shutdown()
-        })
     }
 
     override fun syncSlashCommands() {
