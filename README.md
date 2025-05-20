@@ -2,9 +2,12 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
+> **Kobalt** is a lightweight Kotlin wrapper for [JDA](https://github.com/discord-jda/JDA) that simplifies Discord bot
+> development with an idiomatic Kotlin DSL.
+
 ---
 
-> **Note:** Kobalt is still in its early stages, and there are a few things to keep in mind:
+> **Note: Kobalt is still in its early stages, and there are a few things to keep in mind**:
 >
 > * Kobalt is **not yet available on Maven Central** – please follow the [Installation](#Installation) instructions to
     get started.
@@ -16,80 +19,64 @@
 
 ---
 
-## Overview
+## Table of Contents
 
-#### Why Kobalt Was Made
-
-- Kobalt was created as a Kotlin wrapper for JDA to provide a friendlier syntax and simplify the process of building
-  Discord bots. It leverages the power of JDA while making it more accessible and intuitive for Kotlin developers and
-  other developers coming from other languages.
-
-#### Core Features
-
-- Basically every feature the JDA API provides will be provided here
-
-#### Ease of Use
-
-- Kobalt offers an easy-to-follow design, making it easy to make commands and make control flow simple with our
-  annotation
-  based commands.
+- [Features at a Glance](#features-at-a-glance)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## Features
+## Features at a Glance
 
-- **Simple Yet Powerful**: Easily create Discord bots with a clean and intuitive syntax, combining the power of JDA and
-  the simplicity you love.
-- **Inspired by the Best**: Annotation-based command system inspired by the
-  popular [discord.py](https://github.com/Rapptz/discord.py), making command creation effortless.
-- **Event-Driven Framework**: Seamlessly respond to real-time events and interactions with an efficient and reliable
-  system.
-- **Fully Customizable**: Tailor your bot's behavior, commands, and settings to your liking with flexible options.
-- **Smart Error Handling**: Gracefully manage errors to keep your bot running smoothly without interruptions.
-- **Scalable and Modular**: Designed to grow with your bot, whether you're adding new features or scaling up.
-- **Modern Slash Commands**: Full support for Discord's slash commands, providing a sleek and interactive user
-  experience.
-- **Developer Tools Built-In**: Includes advanced logging and utilities to streamline your development process.
+| Feature                   | Description                                                                                              |
+|---------------------------|----------------------------------------------------------------------------------------------------------|
+| Annotation-based Commands | Inspired by [discord.py](https://github.com/Rapptz/discord.py), create commands with simple annotations. |
+| Slash Commands            | Full support for Discord’s modern slash command interface.                                               |
+| Event-Driven Framework    | React to real-time events with an efficient, type-safe API.                                              |
+| Smart Error Handling      | Built-in utilities to gracefully manage and log runtime errors.                                          |
+| Modular & Scalable        | Easily add or remove modules as your bot grows.                                                          |
+| Developer Tools           | Advanced logging, metrics, and utility classes included.                                                 |
 
 ---
 
 ## Installation
 
-Since Kobalt isn’t on Maven Central yet, you have to add it to mavenLocal and use it from there: <br>
-<sub> (Don't worry, it's easy) </sub>
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Mstr0A/Kobalt.git
+   cd Kobalt
+   ```
 
-1. Clone the project with
+2. Publish to your local Maven cache:
 
-    ```bash
-    git clone https://github.com/Mstr0A/Kobalt.git
-    ```
+   ```bash
+   ./gradlew publishToMavenLocal
+   ```
+3. Add to your project’s gradle build file:
 
-2. Open the project in your editor (Preferably IntelliJ)
+   ```kt
+   // build.gradle.kts
+   repositories {
+       mavenCentral()
+       mavenLocal() // Make sure to add this since it's on Local
+   }
 
-3. Run
-
-    ```bash
-    .\gradlew publishToMavenLocal
-    ```
-
-4. You're done! All you have to do now is add it to your next project's Gradle build file
-
-    ```kt
-    repositories {
-        mavenCentral()
-        mavenLocal() // **Make sure to add this since it's on Local**
-    }
-    
-    dependencies {
-        implementation("com.a0:Kobalt:0.0.1")
-    }
-    ```
+   dependencies {
+       implementation("com.a0:Kobalt:0.0.1")
+   }
+   ```
 
 ---
 
-## Quick Start
+## Usage
 
-A quick example bot to get you running quickly:
+Import and initialize `KBot`, register command groups, then start your bot.
+
+### Example Bot
 
 ```kt
 class MyGroup(val bot: KBot) : CommandGroup(bot) {
@@ -125,10 +112,25 @@ fun main() {
 
 Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
 
+
+---
+
+## Roadmap
+
+* 📚 **Documentation (v0.0.2)** – Comprehensive guides and API reference
+* ✅ **Full JDA Coverage (v0.0.3)** – Implement all JDA endpoints
+* 👥 **Community Team (v0.0.4)** – Onboard contributors and maintainers
+
 ---
 
 ## Contributing
 
-Contributions are always welcome! <br>
-If you want to contribute to Kobalt, make sure to base your branch off of our master branch (or a feature-branch) and
-create your PR into that same branch. <br>
+Contributions of any kind (code or non-code) are welcome,
+we want Kobalt to be the best it can,
+so any help you can provide would be appreciated.
+
+---
+
+## License
+
+Released under the [Apache 2.0 License](LICENSE).
