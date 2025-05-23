@@ -15,7 +15,7 @@
 > * **JDA API support is not complete yet.** I'm actively working on it, but since this is still a **solo project**,
     progress can be a bit slow. I'm planning to build a team in the future to help move things along.
 >
-> If you're interested in contributing or helping out, feel free to reach out [here](mailto:kobalt@ameensonjuq.com)!
+> If you're interested in contributing or helping out, feel free to reach out here at kobalt@ameensonjuq.com!
 
 ---
 
@@ -24,6 +24,7 @@
 - [Features at a Glance](#features-at-a-glance)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Help](#help)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -112,6 +113,12 @@ fun main() {
 
 Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
 
+
+---
+
+## Help
+
+You can get help at our [Discord Server](https://discord.gg/vva8r55sas) in the help and development channels
 
 ---
 
