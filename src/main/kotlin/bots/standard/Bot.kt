@@ -56,9 +56,6 @@ open class KBot(
             // Run shutdown callback first while connections are still alive
             onShutdown?.invoke(this)
 
-            // Wait a moment for any messages to be sent
-            Thread.sleep(1000)
-
             // Then proceed with JDA shutdown
             if (::builtBot.isInitialized) {
                 builtBot.shutdown()
