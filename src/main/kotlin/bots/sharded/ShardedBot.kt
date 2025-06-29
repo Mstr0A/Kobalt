@@ -18,9 +18,10 @@ open class KShardedBot(
     val shardCount: Int = -1,
     prefix: String,
     botTimeZone: String = "UTC",
+    loggerName: String = "KobaltShardedBot",
     private val onReady: ((KShardedBot) -> Unit)? = null,
     private val onShutdown: ((KShardedBot) -> Unit)? = null
-) : KBase(token, intents, prefix, botTimeZone) {
+) : KBase(token, intents, prefix, botTimeZone, loggerName) {
     private val jdaShardedBuilder: DefaultShardManagerBuilder = DefaultShardManagerBuilder.createDefault(token)
     private lateinit var builtBot: ShardManager
     override val management: ShardManager
