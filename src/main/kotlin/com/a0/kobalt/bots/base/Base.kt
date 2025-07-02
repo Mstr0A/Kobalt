@@ -40,9 +40,7 @@ abstract class KBase(
     // Common properties
     var ownerID: String = ""
     val logger: KLogger = KotlinLogging.logger(
-        if (loggerName.isBlank()) {
-            loggerName
-        } else {
+        loggerName.ifBlank {
             throw MalformedParametersException("Logger name must not me empty")
         }
     )
