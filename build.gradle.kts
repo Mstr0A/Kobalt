@@ -40,7 +40,7 @@ repositories {
 
 
 // Centralize the version management
-val jdaVersion: String = "5.5.1"
+val jdaVersion: String = "5.6.1"
 val loggingVersion: String = "7.0.7"
 val loggingAPIVersion: String = "2.0.17"
 val logbackVersion: String = "1.5.18"
@@ -50,9 +50,9 @@ dependencies {
 
     /* External dependencies */
     api("net.dv8tion:JDA:$jdaVersion")
-    api("org.slf4j:slf4j-api:$loggingAPIVersion")
 
     /* Internal dependencies */
+    implementation("org.slf4j:slf4j-api:$loggingAPIVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$loggingVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")

@@ -17,9 +17,10 @@ open class KBot(
     val intents: Array<GatewayIntent>,
     prefix: String,
     botTimeZone: String = "UTC",
+    loggerName: String = "KobaltBot",
     private val onReady: ((KBot) -> Unit)? = null,
     private val onShutdown: ((KBot) -> Unit)? = null,
-) : KBase(token, intents, prefix, botTimeZone) {
+) : KBase(token, intents, prefix, botTimeZone, loggerName) {
     private val jdaBuilder: JDABuilder = JDABuilder.createDefault(token)
     private lateinit var builtBot: JDA
     override val management: JDA

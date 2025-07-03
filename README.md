@@ -81,9 +81,12 @@ Import and initialize `KBot`, register command groups, then start your bot.
 
 ```kt
 class MyGroup(val bot: KBot) : CommandGroup(bot) {
-    @SlashCommand(
-        name = "ping"
-    )
+    @Command(name = "hi")
+    fun sayHi(event: MessageReceivedEvent) {
+        event.channel.sendMessage("Hello!").queue()
+    }
+    
+    @SlashCommand(name = "ping")
     fun ping(event: SlashCommandInteractionEvent) {
         event.reply("Pong! (${event.jda.gatewayPing}ms)").queue()
     }

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import java.lang.reflect.MalformedParametersException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -33,11 +34,16 @@ abstract class KBase(
     token: String,
     intents: Array<GatewayIntent>,
     val prefix: String,
-    val botTimeZone: String
+    botTimeZone: String,
+    loggerName: String
 ) : ListenerAdapter() {
     // Common properties
     var ownerID: String = ""
-    val logger: KLogger = KotlinLogging.logger("KobaltBot")
+    val logger: KLogger = KotlinLogging.logger(
+        loggerName.ifBlank {
+            throw MalformedParametersException("Logger name must not me empty")
+        }
+    )
     val waiter: EventWaiter = EventWaiter()
 
     // Abstract property to handle different types of management (JDA vs ShardManager)
