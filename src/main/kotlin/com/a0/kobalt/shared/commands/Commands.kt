@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 // To inherit from to make sure all commands have access to the bot
-open class CommandGroup(bot: KBase) {
+open class CommandGroup(
+    bot: KBase,
+) {
     open fun onReady() {}
 }
 
@@ -20,7 +22,7 @@ annotation class Command(
     val usage: String = "No usage provided",
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
-    val premissionDeniedMessage: String = "You don't have the permission to use this command"
+    val premissionDeniedMessage: String = "You don't have the permission to use this command",
 )
 
 // Used to define a slash command
@@ -34,7 +36,7 @@ annotation class SlashCommand(
     val usage: String = "No usage provided",
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
-    val premissionDeniedMessage: String = "You don't have the permission to use this command"
+    val premissionDeniedMessage: String = "You don't have the permission to use this command",
 )
 
 // Used to define a standard and a slash command
@@ -49,7 +51,7 @@ annotation class HybridCommand(
     val usage: String = "No usage provided",
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
-    val premissionDeniedMessage: String = "You don't have the permission to use this command"
+    val premissionDeniedMessage: String = "You don't have the permission to use this command",
 )
 
 // Used to define looping tasks

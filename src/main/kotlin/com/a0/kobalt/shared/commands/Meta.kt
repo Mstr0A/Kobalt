@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.time.LocalTime
 import kotlin.reflect.KCallable
 
-
 data class SlashOptionDetails(
     val name: String,
     val description: String,

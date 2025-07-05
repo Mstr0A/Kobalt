@@ -35,15 +35,16 @@ abstract class KBase(
     intents: Array<GatewayIntent>,
     val prefix: String,
     botTimeZone: String,
-    loggerName: String
+    loggerName: String,
 ) : ListenerAdapter() {
     // Common properties
     var ownerID: String = ""
-    val logger: KLogger = KotlinLogging.logger(
-        loggerName.ifBlank {
-            throw MalformedParametersException("Logger name must not me empty")
-        }
-    )
+    val logger: KLogger =
+        KotlinLogging.logger(
+            loggerName.ifBlank {
+                throw MalformedParametersException("Logger name must not me empty")
+            },
+        )
     val waiter: EventWaiter = EventWaiter()
 
     // Abstract property to handle different types of management (JDA vs ShardManager)
@@ -54,7 +55,7 @@ abstract class KBase(
     protected var setShutdownHook = true
     protected var isShuttingDown = AtomicBoolean(false)
 
-//////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
     override fun onReady(event: ReadyEvent) {
         CommandDispatcher.startTasks(taskScope)
@@ -84,7 +85,10 @@ abstract class KBase(
         CommandDispatcher.handleAutocomplete(event)
     }
 
-    open fun onCommandError(event: Event, exception: CommandException) {
+    open fun onCommandError(
+        event: Event,
+        exception: CommandException,
+    ) {
         when (exception) {
             is CommandNotFoundException -> {}
 
@@ -94,7 +98,7 @@ abstract class KBase(
         }
     }
 
-//////////////////////////////////////////////////  Non-Event Functions  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Non-Event Functions  //////////////////////////////////////////////////
 
     init {
         // Command Dispatcher setup
@@ -107,25 +111,25 @@ abstract class KBase(
         CommandDispatcher.registerCommands(instance)
     }
 
-    fun getCommands(): List<CommandMeta> {
-        return CommandDispatcher.getCommands().toList()
-    }
+    fun getCommands(): List<CommandMeta> = CommandDispatcher.getCommands().toList()
 
     inline fun <reified T : Event> waitFor(
         noinline condition: (T) -> Boolean,
         noinline action: (T) -> Unit,
         timeout: Long = -1,
         timeUnit: TimeUnit? = null,
-        noinline timeoutAction: (() -> Unit)? = null
+        noinline timeoutAction: (() -> Unit)? = null,
     ) {
         waiter.waitForEvent(T::class.java, condition, action, timeout, timeUnit, timeoutAction)
     }
 
     // Abstract methods that children must implement
     abstract fun startBot()
+
     abstract fun shutdown()
 
     // These are protected because they should only be used within the subclass
     protected abstract fun syncSlashCommands()
+
     protected abstract fun ready()
 }

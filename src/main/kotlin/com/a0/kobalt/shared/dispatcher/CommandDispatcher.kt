@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.a0.kobalt.shared.dispatcher
 
 import com.a0.kobalt.shared.commands.*
@@ -42,7 +44,7 @@ internal object CommandDispatcher {
     private lateinit var botZoneID: ZoneId
     private var prefix: String = ""
 
-//////////////////////////////////////////////////  Setup Functions  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Setup Functions  //////////////////////////////////////////////////
 
     // functions for setup
     internal fun setLogger(newLogger: KLogger?) {
@@ -66,7 +68,7 @@ internal object CommandDispatcher {
         }
     }
 
-//////////////////////////////////////////////////  On Ready/Shutdown Things  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  On Ready/Shutdown Things  //////////////////////////////////////////////////
 
     // to be called by the bot itself once everything is ready
     internal fun callGroupOnReady() {
@@ -80,7 +82,7 @@ internal object CommandDispatcher {
         }
     }
 
-//////////////////////////////////////////////////  Tasks Related Things  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Tasks Related Things  //////////////////////////////////////////////////
 
     private fun executeTask(task: PendingTimedTask) {
         try {
@@ -90,7 +92,10 @@ internal object CommandDispatcher {
         }
     }
 
-    fun findClosestTime(times: Array<LocalTime>, referenceTime: LocalTime): LocalTime? {
+    fun findClosestTime(
+        times: Array<LocalTime>,
+        referenceTime: LocalTime,
+    ): LocalTime? {
         val futureTimes = times.filter { it.isAfter(referenceTime) }
 
         return if (futureTimes.isNotEmpty()) {
@@ -108,40 +113,41 @@ internal object CommandDispatcher {
 
         // Launch interval tasks
         pendingIntervalTasksList.forEach { task ->
-            val job = scope.launch {
-                while (isActive) {
-                    try {
-                        task.method.call(task.instance)
-                    } catch (e: Exception) {
-                        logger.error { "Error in task ${task.method.name}: ${e.message}" }
+            val job =
+                scope.launch {
+                    while (isActive) {
+                        try {
+                            task.method.call(task.instance)
+                        } catch (e: Exception) {
+                            logger.error { "Error in task ${task.method.name}: ${e.message}" }
+                        }
+                        delay(task.delayMillis)
                     }
-                    delay(task.delayMillis)
                 }
-            }
             intervalTaskJobs.add(job)
         }
 
-
         // Launch timed tasks
         pendingTimedTasksList.forEach { task ->
-            val job = scope.launch {
-                val taskTimes = task.times
-                val closestTime = findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
-                val initialDelayTime = timeUntilTask(closestTime)
-                delay(initialDelayTime)
+            val job =
+                scope.launch {
+                    val taskTimes = task.times
+                    val closestTime = findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
+                    val initialDelayTime = timeUntilTask(closestTime)
+                    delay(initialDelayTime)
 
-                executeTask(task)
-
-                // after that we delay to the next future time
-                while (isActive) {
-                    delay(
-                        timeUntilTask(
-                            findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
-                        )
-                    )
                     executeTask(task)
+
+                    // after that we delay to the next future time
+                    while (isActive) {
+                        delay(
+                            timeUntilTask(
+                                findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first(),
+                            ),
+                        )
+                        executeTask(task)
+                    }
                 }
-            }
             timedTaskJobs.add(job)
         }
     }
@@ -162,16 +168,17 @@ internal object CommandDispatcher {
         val targetDateTime =
             ZonedDateTime.of(currentTime.toLocalDate(), nextTime, botZoneID)
 
-        val nextTargetDateTime = if (currentTime.isBefore(targetDateTime)) {
-            targetDateTime
-        } else {
-            targetDateTime.plusDays(1)  // Move to the next day if the target time has already passed
-        }
+        val nextTargetDateTime =
+            if (currentTime.isBefore(targetDateTime)) {
+                targetDateTime
+            } else {
+                targetDateTime.plusDays(1) // Move to the next day if the target time has already passed
+            }
 
         return ChronoUnit.MILLIS.between(currentTime, nextTargetDateTime)
     }
 
-//////////////////////////////////////////////////  Command Separation  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Command Separation  //////////////////////////////////////////////////
 
     // command registry and helper functions for it
     fun registerCommands(classInstance: CommandGroup) {
@@ -181,8 +188,8 @@ internal object CommandDispatcher {
                 onReadyFunctions.add(
                     OnReadyCall(
                         instance = classInstance,
-                        method = method
-                    )
+                        method = method,
+                    ),
                 )
             }
             method.annotations.forEach { annotation ->
@@ -191,7 +198,7 @@ internal object CommandDispatcher {
                         registerPrefixCommand(
                             classInstance = classInstance,
                             method = method,
-                            annotation = annotation
+                            annotation = annotation,
                         )
                     }
 
@@ -199,7 +206,7 @@ internal object CommandDispatcher {
                         registerSlashCommand(
                             classInstance = classInstance,
                             method = method,
-                            annotation = annotation
+                            annotation = annotation,
                         )
                     }
 
@@ -207,7 +214,7 @@ internal object CommandDispatcher {
                         registerHybridCommand(
                             classInstance = classInstance,
                             method = method,
-                            annotation = annotation
+                            annotation = annotation,
                         )
                     }
 
@@ -215,7 +222,7 @@ internal object CommandDispatcher {
                         registerTask(
                             classInstance = classInstance,
                             method = method,
-                            annotation = annotation
+                            annotation = annotation,
                         )
                     }
                 }
@@ -223,67 +230,82 @@ internal object CommandDispatcher {
         }
     }
 
-//////////////////////////////////////////////////  Command Registry  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Command Registry  //////////////////////////////////////////////////
 
     // Command Registration
-    private fun registerPrefixCommand(classInstance: CommandGroup, method: KCallable<*>, annotation: Command) {
-        val commandMeta = CommandMeta(
-            name = annotation.name.lowercase(),
-            aliases = annotation.aliases.toSet(),
-            shortDescription = annotation.short,
-            description = annotation.description,
-            usage = annotation.usage,
-            requiredPermission = annotation.requiredPermission,
-            hidden = annotation.hidden,
-            premissionDeniedMessage = annotation.premissionDeniedMessage,
-            args = emptyList(),
-            type = CommandType.PREFIX,
-            method = method,
-            instance = classInstance
-        )
+    private fun registerPrefixCommand(
+        classInstance: CommandGroup,
+        method: KCallable<*>,
+        annotation: Command,
+    ) {
+        val commandMeta =
+            CommandMeta(
+                name = annotation.name.lowercase(),
+                aliases = annotation.aliases.toSet(),
+                shortDescription = annotation.short,
+                description = annotation.description,
+                usage = annotation.usage,
+                requiredPermission = annotation.requiredPermission,
+                hidden = annotation.hidden,
+                premissionDeniedMessage = annotation.premissionDeniedMessage,
+                args = emptyList(),
+                type = CommandType.PREFIX,
+                method = method,
+                instance = classInstance,
+            )
         commands.add(commandMeta)
         registerAliases(commandMeta)
         logger.debug { "Registered prefix command: ${annotation.name}" }
     }
 
-    private fun registerSlashCommand(classInstance: CommandGroup, method: KCallable<*>, annotation: SlashCommand) {
+    private fun registerSlashCommand(
+        classInstance: CommandGroup,
+        method: KCallable<*>,
+        annotation: SlashCommand,
+    ) {
         val args = extractSlashOptions(method)
-        val commandMeta = CommandMeta(
-            name = annotation.name.lowercase(),
-            aliases = emptySet(),
-            shortDescription = annotation.short,
-            description = annotation.description,
-            usage = annotation.usage,
-            requiredPermission = annotation.requiredPermission,
-            hidden = annotation.hidden,
-            premissionDeniedMessage = annotation.premissionDeniedMessage,
-            args = args,
-            type = CommandType.SLASH,
-            method = method,
-            instance = classInstance
-        )
+        val commandMeta =
+            CommandMeta(
+                name = annotation.name.lowercase(),
+                aliases = emptySet(),
+                shortDescription = annotation.short,
+                description = annotation.description,
+                usage = annotation.usage,
+                requiredPermission = annotation.requiredPermission,
+                hidden = annotation.hidden,
+                premissionDeniedMessage = annotation.premissionDeniedMessage,
+                args = args,
+                type = CommandType.SLASH,
+                method = method,
+                instance = classInstance,
+            )
         commands.add(commandMeta)
         slashCommandsMap[commandMeta.name.lowercase()] = commandMeta
         registerAutoCompleteOptions(commandMeta)
         logger.debug { "Registered slash command: ${annotation.name}" }
     }
 
-    private fun registerHybridCommand(classInstance: CommandGroup, method: KCallable<*>, annotation: HybridCommand) {
+    private fun registerHybridCommand(
+        classInstance: CommandGroup,
+        method: KCallable<*>,
+        annotation: HybridCommand,
+    ) {
         val args = extractSlashOptions(method)
-        val commandMeta = CommandMeta(
-            name = annotation.name.lowercase(),
-            aliases = annotation.aliases.toSet(),
-            shortDescription = annotation.short,
-            description = annotation.description,
-            usage = annotation.usage,
-            requiredPermission = annotation.requiredPermission,
-            hidden = annotation.hidden,
-            premissionDeniedMessage = annotation.premissionDeniedMessage,
-            args = args,
-            type = CommandType.HYBRID,
-            method = method,
-            instance = classInstance
-        )
+        val commandMeta =
+            CommandMeta(
+                name = annotation.name.lowercase(),
+                aliases = annotation.aliases.toSet(),
+                shortDescription = annotation.short,
+                description = annotation.description,
+                usage = annotation.usage,
+                requiredPermission = annotation.requiredPermission,
+                hidden = annotation.hidden,
+                premissionDeniedMessage = annotation.premissionDeniedMessage,
+                args = args,
+                type = CommandType.HYBRID,
+                method = method,
+                instance = classInstance,
+            )
         commands.add(commandMeta)
         slashCommandsMap[commandMeta.name.lowercase()] = commandMeta
         registerAliases(commandMeta)
@@ -291,8 +313,8 @@ internal object CommandDispatcher {
         logger.debug { "Registered hybrid command: ${annotation.name}" }
     }
 
-    private fun extractSlashOptions(method: KCallable<*>): MutableList<SlashOptionDetails> {
-        return method.annotations
+    private fun extractSlashOptions(method: KCallable<*>): MutableList<SlashOptionDetails> =
+        method.annotations
             .filterIsInstance<SlashOption>()
             .map { option ->
                 SlashOptionDetails(
@@ -300,11 +322,9 @@ internal object CommandDispatcher {
                     description = option.description,
                     required = option.required,
                     autoCompleteOptions = option.autoCompleteOptions.toSet(),
-                    type = option.type
+                    type = option.type,
                 )
-            }
-            .toMutableList()
-    }
+            }.toMutableList()
 
     private fun registerAliases(commandMeta: CommandMeta) {
         aliasMap["$prefix${commandMeta.name}".lowercase()] = commandMeta
@@ -318,16 +338,21 @@ internal object CommandDispatcher {
         autoCompleteOptionsMap[commandMeta.name.lowercase()] = optionsMap
     }
 
-//////////////////////////////////////////////////  Task Registry  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Task Registry  //////////////////////////////////////////////////
 
     // Task Registration
-    private fun registerTask(classInstance: CommandGroup, method: KCallable<*>, annotation: Task) {
-        val timeDelayList = listOf(
-            annotation.milliSeconds,
-            annotation.seconds * 1000,
-            annotation.minutes * 60000,
-            annotation.hours * 3600000,
-        )
+    private fun registerTask(
+        classInstance: CommandGroup,
+        method: KCallable<*>,
+        annotation: Task,
+    ) {
+        val timeDelayList =
+            listOf(
+                annotation.milliSeconds,
+                annotation.seconds * 1000,
+                annotation.minutes * 60000,
+                annotation.hours * 3600000,
+            )
 
         val runningTimes = annotation.time
 
@@ -348,8 +373,8 @@ internal object CommandDispatcher {
                 PendingIntervalTask(
                     instance = classInstance,
                     method = method,
-                    delayMillis = timeDelayList.sum()
-                )
+                    delayMillis = timeDelayList.sum(),
+                ),
             )
             logger.debug { "Registered Task: ${method.name}" }
         } else {
@@ -358,19 +383,19 @@ internal object CommandDispatcher {
                 PendingTimedTask(
                     instance = classInstance,
                     method = method,
-                    times = parsedTimes
-                )
+                    times = parsedTimes,
+                ),
             )
             logger.debug { "Registered Task: ${method.name}" }
         }
     }
 
-//////////////////////////////////////////////////  Get Commands  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Get Commands  //////////////////////////////////////////////////
 
     // this is just to get commands for use like syncing slash commands
     internal fun getCommands() = commands
 
-//////////////////////////////////////////////////  Command Handling  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Command Handling  //////////////////////////////////////////////////
 
     // command handling happens here
     internal fun handlePrefixCommand(event: MessageReceivedEvent) {
@@ -391,19 +416,18 @@ internal object CommandDispatcher {
             throw CommandFailedException(
                 commandName = command.name,
                 commandGroupName = command.instance.javaClass.name,
-                cause = e.cause ?: e
+                cause = e.cause ?: e,
             )
         }
     }
 
     // handlePrefixCommand helper function
-    private fun findCommand(commandName: String): CommandMeta? {
-        return aliasMap[commandName.lowercase()]
-    }
+    private fun findCommand(commandName: String): CommandMeta? = aliasMap[commandName.lowercase()]
 
     internal fun handleSlashCommand(event: SlashCommandInteractionEvent) {
-        val command = slashCommandsMap[event.name.lowercase()]
-            ?: throw CommandNotFoundException(commandName = event.name)
+        val command =
+            slashCommandsMap[event.name.lowercase()]
+                ?: throw CommandNotFoundException(commandName = event.name)
 
         if (command.requiredPermission != Permission.UNKNOWN &&
             event.member?.hasPermission(command.requiredPermission) == false
@@ -418,7 +442,7 @@ internal object CommandDispatcher {
             throw CommandFailedException(
                 commandName = command.name,
                 commandGroupName = command.instance.javaClass.name,
-                cause = e.cause ?: e
+                cause = e.cause ?: e,
             )
         }
     }
@@ -440,7 +464,10 @@ internal object CommandDispatcher {
     }
 
     // handleAutocomplete helper function
-    private fun findFocusedOptionList(commandName: String, focusedOption: String): Set<String>? {
+    private fun findFocusedOptionList(
+        commandName: String,
+        focusedOption: String,
+    ): Set<String>? {
         val optionsMap = autoCompleteOptionsMap[commandName.lowercase()] ?: return null
         val option = optionsMap[focusedOption.lowercase()] ?: return null
         return option.autoCompleteOptions
