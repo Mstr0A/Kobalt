@@ -23,22 +23,27 @@ class TestBot(
     intents: Array<GatewayIntent>,
     prefix: String,
     botTimeZone: String = "UTC",
-    onReady: ((KBot) -> Unit)? = null
+    onReady: ((KBot) -> Unit)? = null,
 ) : KBot(token, intents, prefix, botTimeZone, onReady) {
-
     override fun onMessageReceived(event: MessageReceivedEvent) {
         println("${event.author.name}: ${event.message.contentRaw}")
         super.onMessageReceived(event)
     }
 
-    override fun onCommandError(event: Event, exception: CommandException) {
+    override fun onCommandError(
+        event: Event,
+        exception: CommandException,
+    ) {
         when (event) {
             is MessageReceivedEvent -> handlePrefixError(event, exception)
             is SlashCommandInteractionEvent -> handleSlashError(event, exception)
         }
     }
 
-    fun handlePrefixError(event: MessageReceivedEvent, exception: CommandException) {
+    fun handlePrefixError(
+        event: MessageReceivedEvent,
+        exception: CommandException,
+    ) {
         when (exception) {
             is CommandNotFoundException -> {
                 println("Oops, someone made a typo and wrote: ${exception.commandName}")
@@ -49,7 +54,10 @@ class TestBot(
         }
     }
 
-    fun handleSlashError(event: SlashCommandInteractionEvent, exception: CommandException) {
+    fun handleSlashError(
+        event: SlashCommandInteractionEvent,
+        exception: CommandException,
+    ) {
         when (exception) {
             is CommandNotFoundException -> {
                 println("I somehow couldn't find: ${exception.commandName}")
@@ -61,8 +69,9 @@ class TestBot(
     }
 }
 
-
-class Testing(val bot: KBot) : CommandGroup(bot) {
+class Testing(
+    val bot: KBot,
+) : CommandGroup(bot) {
     @Command(
         "Prefix",
         aliases = ["thefix", "smth"],
@@ -76,9 +85,9 @@ class Testing(val bot: KBot) : CommandGroup(bot) {
                 bot.waitFor<MessageReactionAddEvent>(
                     condition = { reactionEvent ->
                         reactionEvent.reaction.messageId == message.id &&
-                                reactionEvent.emoji.name == "✅" &&
-                                reactionEvent.user?.isBot == false &&
-                                reactionEvent.channel == event.channel
+                            reactionEvent.emoji.name == "✅" &&
+                            reactionEvent.user?.isBot == false &&
+                            reactionEvent.channel == event.channel
                     },
                     action = { reactionEvent ->
                         if (reactionEvent.userId == event.author.id) {
@@ -102,7 +111,7 @@ class Testing(val bot: KBot) : CommandGroup(bot) {
                     timeUnit = TimeUnit.SECONDS,
                     timeoutAction = {
                         event.channel.sendMessage("Time Out").queue()
-                    }
+                    },
                 )
             }
 
@@ -111,13 +120,13 @@ class Testing(val bot: KBot) : CommandGroup(bot) {
     }
 
     @SlashCommand(
-        name = "slashtest"
+        name = "slashtest",
     )
     @SlashOption(
         name = "option",
         required = true,
         autoCompleteOptions = ["somethin1", "somethin2"],
-        type = OptionType.STRING
+        type = OptionType.STRING,
     )
     fun test(event: SlashCommandInteractionEvent) {
         event.reply("${event.user.asMention} picked option ${event.getOption("option")?.asString}").queue()
@@ -128,23 +137,25 @@ fun main() {
     val token = "YOUR_TOKEN"
     val prefix = "!"
 
-    val intents = arrayOf(
-        GatewayIntent.GUILD_MEMBERS,
-        GatewayIntent.MESSAGE_CONTENT,
-        GatewayIntent.GUILD_MESSAGES,
-        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-    )
-    val bot = TestBot(
-        token = token,
-        intents = intents,
-        prefix = prefix,
-        botTimeZone = "Asia/Amman",
-        onReady = { bot ->
-            bot.logger.info { "${bot.management.selfUser.name} is ready!" }
-            bot.management.presence.setPresence(Activity.listening("The souls of the damned"), false)
-            bot.logger.warn { "Powering Up" }
-        }
-    )
+    val intents =
+        arrayOf(
+            GatewayIntent.GUILD_MEMBERS,
+            GatewayIntent.MESSAGE_CONTENT,
+            GatewayIntent.GUILD_MESSAGES,
+            GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        )
+    val bot =
+        TestBot(
+            token = token,
+            intents = intents,
+            prefix = prefix,
+            botTimeZone = "Asia/Amman",
+            onReady = { bot ->
+                bot.logger.info { "${bot.management.selfUser.name} is ready!" }
+                bot.management.presence.setPresence(Activity.listening("The souls of the damned"), false)
+                bot.logger.warn { "Powering Up" }
+            },
+        )
     bot.registerCommands(Testing(bot))
 
     bot.ownerID = "YOUR_ID"

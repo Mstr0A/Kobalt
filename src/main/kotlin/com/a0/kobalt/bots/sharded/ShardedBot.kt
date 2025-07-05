@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import java.util.concurrent.TimeUnit
 
-
 open class KShardedBot(
     token: String,
     val intents: Array<GatewayIntent>,
@@ -20,13 +19,17 @@ open class KShardedBot(
     botTimeZone: String = "UTC",
     loggerName: String = "KobaltShardedBot",
     private val onReady: ((KShardedBot) -> Unit)? = null,
-    private val onShutdown: ((KShardedBot) -> Unit)? = null
+    private val onShutdown: ((KShardedBot) -> Unit)? = null,
 ) : KBase(token, intents, prefix, botTimeZone, loggerName) {
     private val jdaShardedBuilder: DefaultShardManagerBuilder = DefaultShardManagerBuilder.createDefault(token)
     private lateinit var builtBot: ShardManager
     override val management: ShardManager
-        get() = if (::builtBot.isInitialized) builtBot
-        else throw IllegalStateException("Management is not initialized")
+        get() =
+            if (::builtBot.isInitialized) {
+                builtBot
+            } else {
+                throw IllegalStateException("Management is not initialized")
+            }
 
     /**
      *  Disables the Kobalt shutdown hook, setting this to false could mess with onShutdown functionality,
@@ -80,21 +83,24 @@ open class KShardedBot(
     }
 
     override fun startBot() {
-        Runtime.getRuntime().addShutdownHook(Thread({
-            try {
-                shutdown()
-            } catch (e: Exception) {
-                logger.warn(e) { "onShutdown failed" }
-            }
-        }, "Kobalt Shutdown Hook"))
+        Runtime.getRuntime().addShutdownHook(
+            Thread({
+                try {
+                    shutdown()
+                } catch (e: Exception) {
+                    logger.warn(e) { "onShutdown failed" }
+                }
+            }, "Kobalt Shutdown Hook"),
+        )
 
-        builtBot = jdaShardedBuilder
-            .setEnableShutdownHook(false) // No shutdown hook since we have our own
-            .setShardsTotal(shardCount)
-            .enableIntents(intents.toSet())
-            .addEventListeners(waiter)
-            .addEventListeners(this)
-            .build()
+        builtBot =
+            jdaShardedBuilder
+                .setEnableShutdownHook(false) // No shutdown hook since we have our own
+                .setShardsTotal(shardCount)
+                .enableIntents(intents.toSet())
+                .addEventListeners(waiter)
+                .addEventListeners(this)
+                .build()
 
         builtBot.shards.forEach { shard ->
             shard.awaitReady()
@@ -108,42 +114,48 @@ open class KShardedBot(
     override fun syncSlashCommands() {
         val slashCommandsList = CommandDispatcher.getCommands()
 
-        val commandsToAdd = slashCommandsList
-            .filter { it.type != CommandType.PREFIX }
-            .map { slashCommand ->
-                val slashData = Commands.slash(slashCommand.name, slashCommand.description)
+        val commandsToAdd =
+            slashCommandsList
+                .filter { it.type != CommandType.PREFIX }
+                .map { slashCommand ->
+                    val slashData = Commands.slash(slashCommand.name, slashCommand.description)
 
-                slashCommand.args.forEach { arg ->
-                    if (arg.autoCompleteOptions.isNotEmpty()) {
-                        val optionData = OptionData(
-                            arg.type,
-                            arg.name,
-                            arg.description,
-                            arg.required
-                        )
-                        arg.autoCompleteOptions.forEach { choice ->
-                            optionData.addChoice(
-                                choice,
-                                choice.lowercase()
+                    slashCommand.args.forEach { arg ->
+                        if (arg.autoCompleteOptions.isNotEmpty()) {
+                            val optionData =
+                                OptionData(
+                                    arg.type,
+                                    arg.name,
+                                    arg.description,
+                                    arg.required,
+                                )
+                            arg.autoCompleteOptions.forEach { choice ->
+                                optionData.addChoice(
+                                    choice,
+                                    choice.lowercase(),
+                                )
+                            }
+                            slashData.addOptions(optionData)
+                        } else {
+                            slashData.addOption(
+                                arg.type,
+                                arg.name,
+                                arg.description,
+                                arg.required,
                             )
                         }
-                        slashData.addOptions(optionData)
-                    } else {
-                        slashData.addOption(
-                            arg.type,
-                            arg.name,
-                            arg.description,
-                            arg.required
-                        )
                     }
+                    slashData
                 }
-                slashData
-            }
 
-        management.shards.first().updateCommands().addCommands(commandsToAdd).queue()
+        management.shards
+            .first()
+            .updateCommands()
+            .addCommands(commandsToAdd)
+            .queue()
     }
 
-//////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)

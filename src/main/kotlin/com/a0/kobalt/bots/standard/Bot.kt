@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.TimeUnit
 
-
 open class KBot(
     token: String,
     val intents: Array<GatewayIntent>,
@@ -24,8 +23,12 @@ open class KBot(
     private val jdaBuilder: JDABuilder = JDABuilder.createDefault(token)
     private lateinit var builtBot: JDA
     override val management: JDA
-        get() = if (::builtBot.isInitialized) builtBot
-        else throw IllegalStateException("Management is not initialized")
+        get() =
+            if (::builtBot.isInitialized) {
+                builtBot
+            } else {
+                throw IllegalStateException("Management is not initialized")
+            }
 
     /**
      *  Disables the Kobalt shutdown hook, setting this to false could mess with onShutdown functionality,
@@ -75,22 +78,25 @@ open class KBot(
 
     override fun startBot() {
         if (setShutdownHook) {
-            Runtime.getRuntime().addShutdownHook(Thread({
-                try {
-                    shutdown()
-                } catch (e: Exception) {
-                    logger.warn(e) { "onShutdown failed" }
-                }
-            }, "Kobalt Shutdown Hook"))
+            Runtime.getRuntime().addShutdownHook(
+                Thread({
+                    try {
+                        shutdown()
+                    } catch (e: Exception) {
+                        logger.warn(e) { "onShutdown failed" }
+                    }
+                }, "Kobalt Shutdown Hook"),
+            )
         }
 
-        builtBot = jdaBuilder
-            .setEnableShutdownHook(false) // No shutdown hook since we have our own
-            .enableIntents(intents.toSet())
-            .addEventListeners(waiter)
-            .addEventListeners(this)
-            .build()
-            .also { it.awaitReady() }
+        builtBot =
+            jdaBuilder
+                .setEnableShutdownHook(false) // No shutdown hook since we have our own
+                .enableIntents(intents.toSet())
+                .addEventListeners(waiter)
+                .addEventListeners(this)
+                .build()
+                .also { it.awaitReady() }
 
         syncSlashCommands()
         CommandDispatcher.callGroupOnReady()
@@ -100,44 +106,47 @@ open class KBot(
     override fun syncSlashCommands() {
         val slashCommandsList = CommandDispatcher.getCommands()
 
-        val commandsToAdd = slashCommandsList
-            .filter { it.type != CommandType.PREFIX }
-            .map { slashCommand ->
-                val slashData = Commands.slash(slashCommand.name, slashCommand.description)
+        val commandsToAdd =
+            slashCommandsList
+                .filter { it.type != CommandType.PREFIX }
+                .map { slashCommand ->
+                    val slashData = Commands.slash(slashCommand.name, slashCommand.description)
 
-                slashCommand.args.forEach { arg ->
-                    if (arg.autoCompleteOptions.isNotEmpty()) {
-                        val optionData = OptionData(
-                            arg.type,
-                            arg.name,
-                            arg.description,
-                            arg.required
-                        )
-                        arg.autoCompleteOptions.forEach { choice ->
-                            optionData.addChoice(
-                                choice,
-                                choice.lowercase()
+                    slashCommand.args.forEach { arg ->
+                        if (arg.autoCompleteOptions.isNotEmpty()) {
+                            val optionData =
+                                OptionData(
+                                    arg.type,
+                                    arg.name,
+                                    arg.description,
+                                    arg.required,
+                                )
+                            arg.autoCompleteOptions.forEach { choice ->
+                                optionData.addChoice(
+                                    choice,
+                                    choice.lowercase(),
+                                )
+                            }
+                            slashData.addOptions(optionData)
+                        } else {
+                            slashData.addOption(
+                                arg.type,
+                                arg.name,
+                                arg.description,
+                                arg.required,
                             )
                         }
-                        slashData.addOptions(optionData)
-                    } else {
-                        slashData.addOption(
-                            arg.type,
-                            arg.name,
-                            arg.description,
-                            arg.required
-                        )
                     }
+                    slashData
                 }
-                slashData
-            }
 
-        management.updateCommands()
+        management
+            .updateCommands()
             .addCommands(commandsToAdd)
             .queue()
     }
 
-//////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
+// ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)

@@ -22,9 +22,8 @@ import java.util.function.Predicate
  */
 class EventWaiter(
     private val threadpool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
-    private val shutdownAutomatically: Boolean = true
+    private val shutdownAutomatically: Boolean = true,
 ) : EventListener {
-
     private val waitingEvents = ConcurrentHashMap<Class<*>, MutableSet<WaitingEvent<*>>>()
     private val log = LoggerFactory.getLogger(EventWaiter::class.java)
 
@@ -36,7 +35,7 @@ class EventWaiter(
         action: Consumer<T>,
         timeout: Long = -1,
         unit: TimeUnit? = null,
-        timeoutAction: Runnable? = null
+        timeoutAction: Runnable? = null,
     ) {
         require(!isShutdown()) { "Attempted to register a WaitingEvent while the EventWaiter's threadpool was already shut down!" }
         requireNotNull(type) { "The provided class type must not be null" }
@@ -69,7 +68,9 @@ class EventWaiter(
                     if (waiting.condition.test(event)) {
                         waiting.action.accept(event)
                         true
-                    } else false
+                    } else {
+                        false
+                    }
                 } catch (ex: Exception) {
                     log.error("Error while handling waiting-event action", ex)
                     false
@@ -89,6 +90,6 @@ class EventWaiter(
 
     private class WaitingEvent<T : Event>(
         val condition: Predicate<T>,
-        val action: Consumer<T>
+        val action: Consumer<T>,
     )
 }
