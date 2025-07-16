@@ -9,6 +9,7 @@ import com.a0.kobalt.dispatcher.EventWaiter
 import com.a0.kobalt.exceptions.ButtonActionFailed
 import com.a0.kobalt.exceptions.ButtonActionNotFound
 import com.a0.kobalt.exceptions.ButtonException
+import com.a0.kobalt.exceptions.ButtonExists
 import com.a0.kobalt.exceptions.CommandException
 import com.a0.kobalt.exceptions.CommandFailed
 import com.a0.kobalt.exceptions.CommandNotFound
@@ -112,6 +113,10 @@ abstract class KBase(
 
             is ButtonActionFailed -> {
                 logger.error(exception) { "Button action with ID '${exception.buttonID}' failed" }
+            }
+
+            is ButtonExists -> {
+                logger.error(exception) { "Button with ID '${exception.buttonID}' already exists" }
             }
         }
     }
