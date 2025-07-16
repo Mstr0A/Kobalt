@@ -2,13 +2,17 @@ package com.a0.kobalt.bots.base
 
 import com.a0.kobalt.bots.sharded.KShardedBot
 import com.a0.kobalt.bots.standard.KBot
-import com.a0.kobalt.shared.commands.CommandGroup
-import com.a0.kobalt.shared.commands.CommandMeta
-import com.a0.kobalt.shared.dispatcher.CommandDispatcher
-import com.a0.kobalt.shared.dispatcher.EventWaiter
-import com.a0.kobalt.shared.exceptions.CommandException
-import com.a0.kobalt.shared.exceptions.CommandFailedException
-import com.a0.kobalt.shared.exceptions.CommandNotFoundException
+import com.a0.kobalt.commands.CommandGroup
+import com.a0.kobalt.commands.CommandMeta
+import com.a0.kobalt.dispatcher.CommandDispatcher
+import com.a0.kobalt.dispatcher.EventWaiter
+import com.a0.kobalt.exceptions.ButtonActionFailed
+import com.a0.kobalt.exceptions.ButtonActionNotFound
+import com.a0.kobalt.exceptions.ButtonException
+import com.a0.kobalt.exceptions.CommandException
+import com.a0.kobalt.exceptions.CommandFailed
+import com.a0.kobalt.exceptions.CommandNotFound
+import com.a0.kobalt.exceptions.KobaltException
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +21,7 @@ import kotlinx.coroutines.SupervisorJob
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -69,7 +74,7 @@ abstract class KBase(
         try {
             CommandDispatcher.handlePrefixCommand(event)
         } catch (e: CommandException) {
-            this.onCommandError(event, e)
+            this.onInteractionError(event, e)
         }
     }
 
@@ -77,7 +82,7 @@ abstract class KBase(
         try {
             CommandDispatcher.handleSlashCommand(event)
         } catch (e: CommandException) {
-            this.onCommandError(event, e)
+            this.onInteractionError(event, e)
         }
     }
 
@@ -85,15 +90,28 @@ abstract class KBase(
         CommandDispatcher.handleAutocomplete(event)
     }
 
-    open fun onCommandError(
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
+        try {
+            CommandDispatcher.handleButtonInteraction(event)
+        } catch (e: ButtonException) {
+            this.onInteractionError(event, e)
+        }
+    }
+
+    open fun onInteractionError(
         event: Event,
-        exception: CommandException,
+        exception: KobaltException,
     ) {
         when (exception) {
-            is CommandNotFoundException -> {}
+            is CommandNotFound -> {}
+            is ButtonActionNotFound -> {}
 
-            is CommandFailedException -> {
+            is CommandFailed -> {
                 logger.error(exception) { "Command '${exception.commandName}' failed in group '${exception.commandGroupName}'" }
+            }
+
+            is ButtonActionFailed -> {
+                logger.error(exception) { "Button action with ID '${exception.buttonID}' failed" }
             }
         }
     }

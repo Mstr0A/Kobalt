@@ -1,8 +1,8 @@
 package com.a0.kobalt.bots.standard
 
 import com.a0.kobalt.bots.base.KBase
-import com.a0.kobalt.shared.commands.CommandType
-import com.a0.kobalt.shared.dispatcher.CommandDispatcher
+import com.a0.kobalt.commands.CommandType
+import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent

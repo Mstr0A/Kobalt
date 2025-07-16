@@ -1,8 +1,8 @@
 package com.a0.kobalt.bots.sharded
 
 import com.a0.kobalt.bots.base.KBase
-import com.a0.kobalt.shared.commands.CommandType
-import com.a0.kobalt.shared.dispatcher.CommandDispatcher
+import com.a0.kobalt.commands.CommandType
+import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
