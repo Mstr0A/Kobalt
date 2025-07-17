@@ -21,14 +21,14 @@ abstract class KButton(
     val timeoutMillis: Long,
     val style: ButtonStyle = ButtonStyle.PRIMARY,
 ) {
-    val button: Button =
-        when {
-            url != null -> Button.link(url, label)
-            else -> Button.of(style, id, label)
-        }.apply {
-            emoji?.let { withEmoji(it) }
-            withDisabled(disabled)
-        }
+    val button: Button = when {
+        url != null -> Button.link(url, label)
+        label.isNotBlank() -> Button.of(style, id, label)
+        emoji != null -> Button.of(style, id, emoji)
+        else -> throw IllegalArgumentException("Either label or emoji must be provided")
+    }.apply {
+        withDisabled(disabled)
+    }
 
     private var timeoutJob: Job? = null
 
