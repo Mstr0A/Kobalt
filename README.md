@@ -67,7 +67,7 @@
    }
 
    dependencies {
-       implementation("com.a0:Kobalt:0.0.1")
+       implementation("com.a0:Kobalt:0.0.1.1")
    }
    ```
 
