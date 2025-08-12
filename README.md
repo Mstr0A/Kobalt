@@ -1,6 +1,7 @@
 # Kobalt
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Jitpack](https://jitpack.io/v/Mstr0A/Kobalt.svg)](https://jitpack.io/#Mstr0A/Kobalt)
 
 > **Kobalt** is a lightweight Kotlin wrapper for [JDA](https://github.com/discord-jda/JDA) that simplifies Discord bot
 > development with an idiomatic Kotlin DSL.
