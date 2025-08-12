@@ -46,28 +46,17 @@
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Mstr0A/Kobalt.git
-   cd Kobalt
-   ```
-
-2. Publish to your local Maven cache:
-
-   ```bash
-   ./gradlew publishToMavenLocal
-   ```
-3. Add to your project’s gradle build file:
+   Kobalt is available on jitpack.io, and you can add it like this:
 
    ```kt
    // build.gradle.kts
-   repositories {
-       mavenCentral()
-       mavenLocal() // Make sure to add this since it's on Local
-   }
-
-   dependencies {
-       implementation("com.a0:Kobalt:0.0.1.1")
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") } // Add the jitpack.io repo
+    }
+    
+    dependencies {
+        implementation("com.github.Mstr0A:Kobalt:0.0.1.2") // You can change this to any version available in tags
    }
    ```
 
