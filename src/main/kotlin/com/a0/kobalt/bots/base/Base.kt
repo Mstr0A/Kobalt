@@ -68,8 +68,6 @@ abstract class KBase(
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.author.isBot) return
-
         if (!event.message.contentRaw.startsWith(prefix)) return
 
         try {

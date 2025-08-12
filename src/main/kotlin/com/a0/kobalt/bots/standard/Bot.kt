@@ -149,6 +149,8 @@ open class KBot(
 // ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
+        if (event.author.isBot) return
+
         super.onMessageReceived(event)
     }
 }
