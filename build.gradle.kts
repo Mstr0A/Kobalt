@@ -5,12 +5,11 @@ plugins {
     signing
 }
 
-////////////////////////////////////
+// /////////////////////////////////
 //                                //
 //     Project Configuration      //
 //                                //
-////////////////////////////////////
-
+// /////////////////////////////////
 
 group = "com.a0"
 version = "0.0.1.1"
@@ -31,13 +30,11 @@ repositories {
     mavenCentral()
 }
 
-
-////////////////////////////////////
+// /////////////////////////////////
 //                                //
 //    Dependency Configuration    //
 //                                //
-////////////////////////////////////
-
+// /////////////////////////////////
 
 // Centralize the version management
 val jdaVersion: String = "5.6.1"
@@ -45,30 +42,27 @@ val loggingVersion: String = "7.0.7"
 val loggingAPIVersion: String = "2.0.17"
 val logbackVersion: String = "1.5.18"
 
-
 dependencies {
 
-    /* External dependencies */
+    // External dependencies
     api("net.dv8tion:JDA:$jdaVersion")
 
-    /* Internal dependencies */
+    // Internal dependencies
     implementation("org.slf4j:slf4j-api:$loggingAPIVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$loggingVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     implementation(kotlin("reflect"))
 
-    /* Testing */
+    // Testing
     testImplementation(kotlin("test"))
 }
 
-
-////////////////////////////////////
+// /////////////////////////////////
 //                                //
 //    GeneralTask Configuration   //
 //                                //
-////////////////////////////////////
-
+// /////////////////////////////////
 
 tasks {
     // Have shadowJar setup just in case
@@ -79,7 +73,7 @@ tasks {
         manifest.attributes["Main-Class"] = "com.a0.kobalt.MainKt"
 
         exclude(
-            "logback.xml"
+            "logback.xml",
         )
     }
 
@@ -88,13 +82,11 @@ tasks {
     }
 }
 
-
-////////////////////////////////////
+// /////////////////////////////////
 //                                //
 //    Publishing And Signing      //
 //                                //
-////////////////////////////////////
-
+// /////////////////////////////////
 
 // Currently only publish to maven local
 publishing {
