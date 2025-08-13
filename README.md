@@ -57,7 +57,7 @@
     }
     
     dependencies {
-        implementation("com.github.Mstr0A:Kobalt:0.0.1.2") // You can change this to any version available in tags
+        implementation("com.github.Mstr0A:Kobalt:0.0.2") // You can change this to any version available in tags
    }
    ```
 
@@ -117,9 +117,9 @@ You can get help at our [Discord Server](https://discord.gg/vva8r55sas) in the h
 
 ## Roadmap
 
-* 📚 **Documentation (v0.0.2)** – Comprehensive guides and API reference
-* ✅ **Full JDA Coverage (v0.0.3)** – Implement all JDA endpoints
-* 👥 **Community Team (v0.0.4)** – Onboard contributors and maintainers
+* 📚 **Documentation (v0.0.3)** – Comprehensive guides and API reference
+* ✅ **Full JDA Coverage (v0.0.4)** – Implement all JDA endpoints
+* 👥 **Community Team (v0.0.5)** – Onboard contributors and maintainers
 
 ---
 

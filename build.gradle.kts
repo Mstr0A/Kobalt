@@ -12,7 +12,7 @@ plugins {
 // /////////////////////////////////
 
 group = "com.a0"
-version = "0.0.1.2"
+version = "0.0.2"
 
 java {
     withJavadocJar()
@@ -70,7 +70,6 @@ tasks {
         archiveBaseName.set("Kobalt")
         archiveVersion.set(project.version.toString())
         archiveClassifier.set("")
-        manifest.attributes["Main-Class"] = "com.a0.kobalt.MainKt"
 
         exclude(
             "logback.xml",
