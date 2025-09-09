@@ -1,8 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "8.3.6"
+    alias(libs.plugins.kotlin.jvm)
     `maven-publish`
-    signing
+//    signing // commented out as it is not needed as of now
 }
 
 // /////////////////////////////////
@@ -36,22 +35,16 @@ repositories {
 //                                //
 // /////////////////////////////////
 
-// Centralize the version management
-val jdaVersion: String = "5.6.1"
-val loggingVersion: String = "7.0.7"
-val loggingAPIVersion: String = "2.0.17"
-val logbackVersion: String = "1.5.18"
-
 dependencies {
 
     // External dependencies
-    api("net.dv8tion:JDA:$jdaVersion")
+    api(libs.jda)
 
     // Internal dependencies
-    implementation("org.slf4j:slf4j-api:$loggingAPIVersion")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("io.github.oshai:kotlin-logging-jvm:$loggingVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation(libs.slf4j.api)
+    implementation(libs.logback.classic)
+    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(kotlin("reflect"))
 
     // Testing
@@ -64,21 +57,8 @@ dependencies {
 //                                //
 // /////////////////////////////////
 
-tasks {
-    // Have shadowJar setup just in case
-    shadowJar {
-        archiveBaseName.set("Kobalt")
-        archiveVersion.set(project.version.toString())
-        archiveClassifier.set("")
-
-        exclude(
-            "logback.xml",
-        )
-    }
-
-    test {
-        useJUnitPlatform()
-    }
+tasks.test {
+    useJUnitPlatform()
 }
 
 // /////////////////////////////////
@@ -92,7 +72,33 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifactId = "Kobalt"
+            artifactId = "kobalt"
+
+            pom {
+                name.set("Kobalt")
+                description.set("A Kotlin wrapper library for building Discord bots with JDA")
+                url.set("https://github.com/Mstr0A/Kobalt")
+
+                licenses {
+                    license {
+                        name.set("Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("a0")
+                        name.set("Ameen")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/Mstr0A/Kobalt.git")
+                    developerConnection.set("scm:git:ssh://github.com/Mstr0A/Kobalt.git")
+                    url.set("https://github.com/Mstr0A/Kobalt")
+                }
+            }
         }
     }
     repositories {

@@ -1,0 +1,17 @@
+[versions]
+kotlin = "2.2.10"
+jda = "5.6.1"
+slf4j = "2.0.17"
+logback = "1.5.18"
+kotlin-logging = "7.0.13"
+kotlinx-coroutines = "1.10.2"
+
+[libraries]
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j"}
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback"}
+kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging"}
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

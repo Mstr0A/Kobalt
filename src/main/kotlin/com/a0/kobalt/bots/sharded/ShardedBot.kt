@@ -11,6 +11,21 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import java.util.concurrent.TimeUnit
 
+/**
+ * A Discord bot that supports multiple shards.
+ *
+ * Provides an easy interface for handling commands, events, and shutdown
+ * across multiple shards.
+ *
+ * @param token The Discord bot token.
+ * @param intents The gateway intents your bot will listen to.
+ * @param shardCount Number of shards to run. Defaults to -1 (automatic).
+ * @param prefix Prefix for prefix-based commands.
+ * @param botTimeZone Time zone for the bot. Defaults to "UTC".
+ * @param loggerName Name of the logger. Defaults to "KobaltShardedBot".
+ * @param onReady Optional callback invoked when the bot is ready.
+ * @param onShutdown Optional callback invoked when the bot shuts down.
+ */
 open class KShardedBot(
     token: String,
     val intents: Array<GatewayIntent>,
@@ -82,6 +97,9 @@ open class KShardedBot(
         }
     }
 
+    /**
+     * Starts your bot
+     */
     override fun startBot() {
         Runtime.getRuntime().addShutdownHook(
             Thread({
@@ -111,6 +129,9 @@ open class KShardedBot(
         ready()
     }
 
+    /**
+     * Registers and syncs all the slash commands available
+     */
     override fun syncSlashCommands() {
         val slashCommandsList = CommandDispatcher.getCommands()
 
@@ -157,6 +178,9 @@ open class KShardedBot(
 
 // ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
+    /**
+     * Handles messages received from Discord (ignores bots automatically).
+     */
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.author.isBot) return
 
