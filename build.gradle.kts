@@ -11,7 +11,7 @@ plugins {
 // /////////////////////////////////
 
 group = "com.a0"
-version = "0.0.2"
+version = "0.0.21"
 
 java {
     withJavadocJar()
