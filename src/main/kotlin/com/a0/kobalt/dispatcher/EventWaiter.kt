@@ -21,13 +21,13 @@ import java.util.function.Predicate
  * Massive shout-outs to [Chew](https://github.com/Chew)
  */
 class EventWaiter(
-    private val threadpool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
+    private val threadPool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
     private val shutdownAutomatically: Boolean = true,
 ) : EventListener {
     private val waitingEvents = ConcurrentHashMap<Class<*>, MutableSet<WaitingEvent<*>>>()
     private val log = LoggerFactory.getLogger(EventWaiter::class.java)
 
-    fun isShutdown(): Boolean = threadpool.isShutdown
+    fun isShutdown(): Boolean = threadPool.isShutdown
 
     fun <T : Event> waitForEvent(
         type: Class<T>,
@@ -37,17 +37,14 @@ class EventWaiter(
         unit: TimeUnit? = null,
         timeoutAction: Runnable? = null,
     ) {
-        require(!isShutdown()) { "Attempted to register a WaitingEvent while the EventWaiter's threadpool was already shut down!" }
-        requireNotNull(type) { "The provided class type must not be null" }
-        requireNotNull(condition) { "The provided condition predicate must not be null" }
-        requireNotNull(action) { "The provided action consumer must not be null" }
+        require(!isShutdown()) { "Attempted to register a WaitingEvent while the EventWaiter's threadPool was already shut down!" }
 
         val waitingEvent = WaitingEvent(condition, action)
         val set = waitingEvents.computeIfAbsent(type) { ConcurrentHashMap.newKeySet() }
         set += waitingEvent
 
         if (timeout > 0 && unit != null && timeoutAction != null) {
-            threadpool.schedule({
+            threadPool.schedule({
                 try {
                     if (set.remove(waitingEvent)) timeoutAction.run()
                 } catch (ex: Exception) {
@@ -77,7 +74,7 @@ class EventWaiter(
                 }
             }
             if (event is ShutdownEvent && shutdownAutomatically) {
-                threadpool.shutdown()
+                threadPool.shutdown()
             }
             clazz = clazz.superclass
         }
@@ -85,7 +82,7 @@ class EventWaiter(
 
     fun shutdown() {
         check(!shutdownAutomatically) { "Cannot shutdown automatically-managed EventWaiter" }
-        threadpool.shutdown()
+        threadPool.shutdown()
     }
 
     private class WaitingEvent<T : Event>(

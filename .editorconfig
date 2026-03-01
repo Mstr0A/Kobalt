@@ -1,0 +1,3 @@
+[*.{kt,kts}]
+# We want all of the ktlint defaults except this
+ktlint_standard_filename = disabled

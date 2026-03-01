@@ -11,6 +11,19 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.TimeUnit
 
+/**
+ * A high-level Discord bot built on top of JDA.
+ *
+ * Handles commands, events, and shutdown in a simple interface.
+ *
+ * @param token The Discord bot token.
+ * @param intents The gateway intents your bot will listen to.
+ * @param prefix Prefix for prefix-based commands.
+ * @param botTimeZone Time zone for the bot. Defaults to "UTC".
+ * @param loggerName Name of the logger. Defaults to "KobaltBot".
+ * @param onReady Callback invoked when the bot is ready.
+ * @param onShutdown Callback invoked when the bot shuts down.
+ */
 open class KBot(
     token: String,
     val intents: Array<GatewayIntent>,
@@ -46,6 +59,9 @@ open class KBot(
         setShutdownHook = state
     }
 
+    /**
+     * Calls on ready if it's there
+     */
     override fun ready() {
         onReady?.invoke(this)
     }
@@ -76,6 +92,9 @@ open class KBot(
         }
     }
 
+    /**
+     * Starts your bot
+     */
     override fun startBot() {
         if (setShutdownHook) {
             Runtime.getRuntime().addShutdownHook(
@@ -103,6 +122,9 @@ open class KBot(
         ready()
     }
 
+    /**
+     * Registers and syncs all the slash commands available
+     */
     override fun syncSlashCommands() {
         val slashCommandsList = CommandDispatcher.getCommands()
 
@@ -148,6 +170,9 @@ open class KBot(
 
 // ////////////////////////////////////////////////  Event Functions  //////////////////////////////////////////////////
 
+    /**
+     * Handles messages received from Discord (ignores bots automatically).
+     */
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.author.isBot) return
 

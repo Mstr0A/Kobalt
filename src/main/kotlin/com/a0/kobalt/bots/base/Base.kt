@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * The base class of [KBot] and [KShardedBot]
  *
- * *CAN NOT AND SHOULD NOT BE USED IN BUILDS*
+ * INTERNAL: Do not use directly in production code.
  */
 abstract class KBase(
     token: String,
