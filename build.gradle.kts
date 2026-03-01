@@ -11,7 +11,7 @@ plugins {
 // /////////////////////////////////
 
 group = "com.a0"
-version = "0.0.21"
+version = "0.0.25"
 
 java {
     withJavadocJar()
@@ -22,7 +22,7 @@ java {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(25)
 }
 
 repositories {
