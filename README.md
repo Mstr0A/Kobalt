@@ -57,7 +57,7 @@
     }
     
     dependencies {
-        implementation("com.github.Mstr0A:Kobalt:0.0.2") // You can change this to any version available in tags
+        implementation("com.github.Mstr0A:Kobalt:VERSION_NUMBER") // You can change this to any version available in releases
    }
    ```
 
