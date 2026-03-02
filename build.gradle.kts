@@ -11,18 +11,18 @@ plugins {
 // /////////////////////////////////
 
 group = "com.a0"
-version = "0.0.25"
+version = "0.0.27"
 
 java {
     withJavadocJar()
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 repositories {
