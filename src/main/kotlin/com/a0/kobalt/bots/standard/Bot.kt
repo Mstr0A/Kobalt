@@ -5,6 +5,8 @@ import com.a0.kobalt.commands.CommandType
 import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.audio.AudioModuleConfig
+import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -30,6 +32,7 @@ open class KBot(
     prefix: String,
     botTimeZone: String = "UTC",
     loggerName: String = "KobaltBot",
+    val daveSessionFactory: DaveSessionFactory? = null,
     private val onReady: ((KBot) -> Unit)? = null,
     private val onShutdown: ((KBot) -> Unit)? = null,
 ) : KBase(token, intents, prefix, botTimeZone, loggerName) {
@@ -114,7 +117,14 @@ open class KBot(
                 .enableIntents(intents.toSet())
                 .addEventListeners(waiter)
                 .addEventListeners(this)
-                .build()
+                .apply {
+                    if (daveSessionFactory != null) {
+                        setAudioModuleConfig(
+                            AudioModuleConfig()
+                                .withDaveSessionFactory(daveSessionFactory),
+                        )
+                    }
+                }.build()
                 .also { it.awaitReady() }
 
         syncSlashCommands()
