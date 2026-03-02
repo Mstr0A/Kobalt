@@ -39,11 +39,11 @@ dependencies {
 
     // External dependencies
     api(libs.jda)
+    api(libs.kotlin.logging.jvm)
 
     // Internal dependencies
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
-    implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.coroutines.core)
     implementation(kotlin("reflect"))
 
