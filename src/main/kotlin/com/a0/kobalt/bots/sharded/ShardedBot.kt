@@ -6,6 +6,7 @@ import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.audio.AudioModuleConfig
 import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -36,6 +37,7 @@ open class KShardedBot(
     botTimeZone: String = "UTC",
     loggerName: String = "KobaltShardedBot",
     val daveSessionFactory: DaveSessionFactory? = null,
+    val voiceDispatchInterceptor: VoiceDispatchInterceptor? = null,
     private val onReady: ((KShardedBot) -> Unit)? = null,
     private val onShutdown: ((KShardedBot) -> Unit)? = null,
 ) : KBase(token, intents, prefix, botTimeZone, loggerName) {
@@ -121,11 +123,17 @@ open class KShardedBot(
                 .addEventListeners(waiter)
                 .addEventListeners(this)
                 .apply {
+                    // We set the DAVE session factory the user provided if a user wants to use the DAVE protocol
                     if (daveSessionFactory != null) {
                         setAudioModuleConfig(
                             AudioModuleConfig()
                                 .withDaveSessionFactory(daveSessionFactory),
                         )
+                    }
+                }.apply {
+                    // We set the Voice interceptor the user provided if a user wants to use something like lavalink
+                    voiceDispatchInterceptor?.let {
+                        setVoiceDispatchInterceptor(it)
                     }
                 }.build()
 
