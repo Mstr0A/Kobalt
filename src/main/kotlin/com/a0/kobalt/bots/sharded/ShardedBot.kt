@@ -3,6 +3,8 @@ package com.a0.kobalt.bots.sharded
 import com.a0.kobalt.bots.base.KBase
 import com.a0.kobalt.commands.CommandType
 import com.a0.kobalt.dispatcher.CommandDispatcher
+import net.dv8tion.jda.api.audio.AudioModuleConfig
+import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -33,6 +35,7 @@ open class KShardedBot(
     prefix: String,
     botTimeZone: String = "UTC",
     loggerName: String = "KobaltShardedBot",
+    val daveSessionFactory: DaveSessionFactory? = null,
     private val onReady: ((KShardedBot) -> Unit)? = null,
     private val onShutdown: ((KShardedBot) -> Unit)? = null,
 ) : KBase(token, intents, prefix, botTimeZone, loggerName) {
@@ -114,11 +117,17 @@ open class KShardedBot(
         builtBot =
             jdaShardedBuilder
                 .setEnableShutdownHook(false) // No shutdown hook since we have our own
-                .setShardsTotal(shardCount)
                 .enableIntents(intents.toSet())
                 .addEventListeners(waiter)
                 .addEventListeners(this)
-                .build()
+                .apply {
+                    if (daveSessionFactory != null) {
+                        setAudioModuleConfig(
+                            AudioModuleConfig()
+                                .withDaveSessionFactory(daveSessionFactory),
+                        )
+                    }
+                }.build()
 
         builtBot.shards.forEach { shard ->
             shard.awaitReady()
