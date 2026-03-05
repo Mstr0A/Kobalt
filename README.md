@@ -117,9 +117,9 @@ You can get help at our [Discord Server](https://discord.gg/vva8r55sas) in the h
 
 ## Roadmap
 
-* 📚 **Documentation (v0.0.3)** – Comprehensive guides and API reference
-* ✅ **Full JDA Coverage (v0.0.4)** – Implement all JDA endpoints
-* 👥 **Community Team (v0.0.5)** – Onboard contributors and maintainers
+* 📚 **Documentation (v0.0.4)** – Comprehensive guides and API reference
+* ✅ **Full JDA Coverage (v0.0.5)** – Implement all JDA endpoints
+* 👥 **Community Team (v0.0.6)** – Onboard contributors and maintainers
 
 ---
 
