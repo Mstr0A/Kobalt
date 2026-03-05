@@ -2,8 +2,8 @@ package com.a0.kobalt.commands
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.lang.invoke.MethodHandle
 import java.time.LocalTime
-import kotlin.reflect.KCallable
 
 data class SlashOptionDetails(
     val name: String,
@@ -24,24 +24,26 @@ data class CommandMeta(
     val permissionDeniedMessage: String,
     val args: List<SlashOptionDetails>,
     val type: CommandType,
-    val method: KCallable<*>,
+    val methodHandle: MethodHandle,
     val instance: Any,
 )
 
 data class OnReadyCall(
     val instance: CommandGroup,
-    val method: KCallable<*>,
+    val methodHandle: MethodHandle,
 )
 
 data class PendingIntervalTask(
     val instance: CommandGroup,
-    val method: KCallable<*>,
+    val methodHandle: MethodHandle,
+    val methodName: String,
     val delayMillis: Long,
 )
 
 data class PendingTimedTask(
     val instance: CommandGroup,
-    val method: KCallable<*>,
+    val methodHandle: MethodHandle,
+    val methodName: String,
     val times: Array<LocalTime>,
 )
 

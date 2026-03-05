@@ -26,12 +26,16 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
 import java.time.Duration
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.reflect.KCallable
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
 internal object CommandDispatcher {
     // commands list
@@ -90,7 +94,7 @@ internal object CommandDispatcher {
         // Call all onReady functions
         onReadyFunctions.forEach { call ->
             try {
-                call.method.call(call.instance)
+                call.methodHandle.invoke(call.instance)
             } catch (e: Exception) {
                 logger.error { "Error executing onReady function for command group ${call.instance::class.qualifiedName}: ${e.message}" }
             }
@@ -101,9 +105,9 @@ internal object CommandDispatcher {
 
     private fun executeTask(task: PendingTimedTask) {
         try {
-            task.method.call(task.instance)
+            task.methodHandle.invoke(task.instance)
         } catch (e: Exception) {
-            logger.error { "Error in task ${task.method.name}: ${e.message}" }
+            logger.error { "Error in task ${task.methodName}: ${e.message}" }
         }
     }
 
@@ -132,9 +136,9 @@ internal object CommandDispatcher {
                 scope.launch {
                     while (isActive) {
                         try {
-                            task.method.call(task.instance)
+                            task.methodHandle.invoke(task.instance)
                         } catch (e: Exception) {
-                            logger.error { "Error in task ${task.method.name}: ${e.message}" }
+                            logger.error { "Error in task ${task.methodName}: ${e.message}" }
                         }
                         delay(task.delayMillis)
                     }
@@ -197,49 +201,26 @@ internal object CommandDispatcher {
 
     // command registry and helper functions for it
     fun registerCommands(classInstance: CommandGroup) {
+        val lookup = MethodHandles.lookup()
         val methods = classInstance::class.members
         for (method in methods) {
+            val javaMethod = (method as? KFunction<*>)?.javaMethod ?: continue
+            val methodHandle = lookup.unreflect(javaMethod)
+
             if (method.name == "onReady") {
                 onReadyFunctions.add(
                     OnReadyCall(
                         instance = classInstance,
-                        method = method,
+                        methodHandle = methodHandle,
                     ),
                 )
             }
             method.annotations.forEach { annotation ->
                 when (annotation) {
-                    is Command -> {
-                        registerPrefixCommand(
-                            classInstance = classInstance,
-                            method = method,
-                            annotation = annotation,
-                        )
-                    }
-
-                    is SlashCommand -> {
-                        registerSlashCommand(
-                            classInstance = classInstance,
-                            method = method,
-                            annotation = annotation,
-                        )
-                    }
-
-                    is HybridCommand -> {
-                        registerHybridCommand(
-                            classInstance = classInstance,
-                            method = method,
-                            annotation = annotation,
-                        )
-                    }
-
-                    is Task -> {
-                        registerTask(
-                            classInstance = classInstance,
-                            method = method,
-                            annotation = annotation,
-                        )
-                    }
+                    is Command -> registerPrefixCommand(classInstance, methodHandle, annotation)
+                    is SlashCommand -> registerSlashCommand(classInstance, method, lookup, annotation)
+                    is HybridCommand -> registerHybridCommand(classInstance, method, lookup, annotation)
+                    is Task -> registerTask(classInstance, methodHandle, method.name, annotation)
                 }
             }
         }
@@ -250,7 +231,7 @@ internal object CommandDispatcher {
     // Command Registration
     private fun registerPrefixCommand(
         classInstance: CommandGroup,
-        method: KCallable<*>,
+        methodHandle: MethodHandle,
         annotation: Command,
     ) {
         val commandMeta =
@@ -265,7 +246,7 @@ internal object CommandDispatcher {
                 permissionDeniedMessage = annotation.permissionDeniedMessage,
                 args = emptyList(),
                 type = CommandType.PREFIX,
-                method = method,
+                methodHandle = methodHandle,
                 instance = classInstance,
             )
         commands.add(commandMeta)
@@ -276,9 +257,12 @@ internal object CommandDispatcher {
     private fun registerSlashCommand(
         classInstance: CommandGroup,
         method: KCallable<*>,
+        lookup: MethodHandles.Lookup,
         annotation: SlashCommand,
     ) {
         val args = extractSlashOptions(method)
+        val javaMethod = (method as? KFunction<*>)?.javaMethod ?: return
+        val methodHandle = lookup.unreflect(javaMethod)
         val commandMeta =
             CommandMeta(
                 name = annotation.name.lowercase(),
@@ -291,7 +275,7 @@ internal object CommandDispatcher {
                 permissionDeniedMessage = annotation.permissionDeniedMessage,
                 args = args,
                 type = CommandType.SLASH,
-                method = method,
+                methodHandle = methodHandle,
                 instance = classInstance,
             )
         commands.add(commandMeta)
@@ -303,9 +287,12 @@ internal object CommandDispatcher {
     private fun registerHybridCommand(
         classInstance: CommandGroup,
         method: KCallable<*>,
+        lookup: MethodHandles.Lookup,
         annotation: HybridCommand,
     ) {
         val args = extractSlashOptions(method)
+        val javaMethod = (method as? KFunction<*>)?.javaMethod ?: return
+        val methodHandle = lookup.unreflect(javaMethod)
         val commandMeta =
             CommandMeta(
                 name = annotation.name.lowercase(),
@@ -318,7 +305,7 @@ internal object CommandDispatcher {
                 permissionDeniedMessage = annotation.permissionDeniedMessage,
                 args = args,
                 type = CommandType.HYBRID,
-                method = method,
+                methodHandle = methodHandle,
                 instance = classInstance,
             )
         commands.add(commandMeta)
@@ -358,7 +345,8 @@ internal object CommandDispatcher {
     // Task Registration
     private fun registerTask(
         classInstance: CommandGroup,
-        method: KCallable<*>,
+        methodHandle: MethodHandle,
+        methodName: String,
         annotation: Task,
     ) {
         val timeDelayList =
@@ -387,21 +375,23 @@ internal object CommandDispatcher {
             pendingIntervalTasksList.add(
                 PendingIntervalTask(
                     instance = classInstance,
-                    method = method,
+                    methodHandle = methodHandle,
+                    methodName = methodName,
                     delayMillis = timeDelayList.sum(),
                 ),
             )
-            logger.debug { "Registered Task: ${method.name}" }
+            logger.debug { "Registered Task: $methodName" }
         } else {
             val parsedTimes = runningTimes.map { time -> LocalTime.parse(time) }.toTypedArray()
             pendingTimedTasksList.add(
                 PendingTimedTask(
                     instance = classInstance,
-                    method = method,
+                    methodHandle = methodHandle,
+                    methodName = methodName,
                     times = parsedTimes,
                 ),
             )
-            logger.debug { "Registered Task: ${method.name}" }
+            logger.debug { "Registered Task: $methodName" }
         }
     }
 
@@ -426,7 +416,7 @@ internal object CommandDispatcher {
         }
 
         try {
-            command.method.call(command.instance, event)
+            command.methodHandle.invoke(command.instance, event)
         } catch (e: Exception) {
             throw CommandFailed(
                 commandName = command.name,
@@ -452,7 +442,7 @@ internal object CommandDispatcher {
         }
 
         try {
-            command.method.call(command.instance, event)
+            command.methodHandle.invoke(command.instance, event)
         } catch (e: Exception) {
             throw CommandFailed(
                 commandName = command.name,
