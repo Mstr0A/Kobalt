@@ -201,7 +201,7 @@ internal object CommandDispatcher {
 
     // command registry and helper functions for it
     fun registerCommands(classInstance: CommandGroup) {
-        val lookup = MethodHandles.lookup()
+        val lookup = MethodHandles.privateLookupIn(classInstance.javaClass, MethodHandles.lookup())
         val methods = classInstance::class.members
         for (method in methods) {
             val javaMethod = (method as? KFunction<*>)?.javaMethod ?: continue
