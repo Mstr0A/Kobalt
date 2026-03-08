@@ -18,14 +18,17 @@ import java.util.concurrent.TimeUnit
  * A high-level Discord bot built on top of JDA.
  *
  * Handles commands, events, and shutdown in a simple interface.
+ * For more control, extend this class and override the provided open functions.
  *
- * @param token The Discord bot token.
- * @param intents The gateway intents your bot will listen to.
- * @param prefix Prefix for prefix-based commands.
- * @param botTimeZone Time zone for the bot. Defaults to "UTC".
- * @param loggerName Name of the logger. Defaults to "KobaltBot".
- * @param onReady Callback invoked when the bot is ready.
- * @param onShutdown Callback invoked when the bot shuts down.
+ * @param token [String] The Discord bot token.
+ * @param intents [Array] of [GatewayIntent] the bot will listen to.
+ * @param prefix [String] Prefix for prefix-based commands.
+ * @param botTimeZone [String] Time zone for the bot. Defaults to "UTC".
+ * @param loggerName [String] Name of the logger. Defaults to "KobaltShardedBot".
+ * @param daveSessionFactory [DaveSessionFactory]? Optional DAVE session factory for E2EE support.
+ * @param voiceDispatchInterceptor [VoiceDispatchInterceptor]? Optional interceptor for voice dispatch events.
+ * @param onReady [(KShardedBot) -> Unit]? Optional callback invoked when the bot is ready.
+ * @param onShutdown [(KShardedBot) -> Unit]? Optional callback invoked when the bot shuts down.
  */
 open class KBot(
     token: String,
