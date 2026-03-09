@@ -9,8 +9,9 @@ data class SlashOptionDetails(
     val name: String,
     val description: String,
     val required: Boolean,
-    val autoCompleteOptions: Set<String>,
     val type: OptionType,
+    val choices: Set<String> = emptySet(),
+    val autoComplete: AutoCompleteHandler = NoAutoComplete,
 )
 
 data class CommandMeta(

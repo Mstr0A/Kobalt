@@ -85,21 +85,7 @@ abstract class KBase(
         }
     }
 
-    /**
-     * Called when a slash command option autocomplete interaction is received.
-     * Override this function to provide dynamic autocomplete options for your commands.
-     *
-     * Return `true` if the event was handled, which will prevent Kobalt from
-     * processing it further. Return `false` to fall through to Kobalt's built-in
-     * static autocomplete handling.
-     *
-     * @param event The autocomplete interaction event.
-     * @return `true` if handled, `false` to defer to Kobalt.
-     */
-    open fun onAutocomplete(event: CommandAutoCompleteInteractionEvent): Boolean = false
-
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
-        if (onAutocomplete(event)) return
         CommandDispatcher.handleAutocomplete(event)
     }
 
