@@ -2,19 +2,7 @@
 
 package com.a0.kobalt.dispatcher
 
-import com.a0.kobalt.commands.Command
-import com.a0.kobalt.commands.CommandGroup
-import com.a0.kobalt.commands.CommandMeta
-import com.a0.kobalt.commands.CommandType
-import com.a0.kobalt.commands.HybridCommand
-import com.a0.kobalt.commands.NoAutoComplete
-import com.a0.kobalt.commands.OnReadyCall
-import com.a0.kobalt.commands.PendingIntervalTask
-import com.a0.kobalt.commands.PendingTimedTask
-import com.a0.kobalt.commands.SlashCommand
-import com.a0.kobalt.commands.SlashOption
-import com.a0.kobalt.commands.SlashOptionDetails
-import com.a0.kobalt.commands.Task
+import com.a0.kobalt.commands.*
 import com.a0.kobalt.exceptions.ButtonActionFailed
 import com.a0.kobalt.exceptions.ButtonActionNotFound
 import com.a0.kobalt.exceptions.CommandFailed
@@ -23,7 +11,6 @@ import com.a0.kobalt.ui.buttons.KButtonRegistry
 import io.github.oshai.kotlinlogging.KLogger
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -48,7 +35,6 @@ internal object CommandDispatcher {
     // maps
     private val aliasMap = mutableMapOf<String, CommandMeta>()
     private val slashCommandsMap = mutableMapOf<String, CommandMeta>()
-    private val autoCompleteOptionsMap = mutableMapOf<String, Map<String, SlashOptionDetails>>()
 
     // interval task things
     private val pendingIntervalTasksList = mutableListOf<PendingIntervalTask>()
@@ -281,7 +267,6 @@ internal object CommandDispatcher {
             )
         commands.add(commandMeta)
         slashCommandsMap[commandMeta.name.lowercase()] = commandMeta
-        registerAutoCompleteOptions(commandMeta)
         logger.debug { "Registered slash command: ${annotation.name}" }
     }
 
@@ -312,7 +297,6 @@ internal object CommandDispatcher {
         commands.add(commandMeta)
         slashCommandsMap[commandMeta.name.lowercase()] = commandMeta
         registerAliases(commandMeta)
-        registerAutoCompleteOptions(commandMeta)
         logger.debug { "Registered hybrid command: ${annotation.name}" }
     }
 
@@ -326,10 +310,7 @@ internal object CommandDispatcher {
                     required = option.required,
                     type = option.type,
                     choices = option.choices.toSet(),
-                    autoComplete =
-                        option.autoComplete.objectInstance ?: option.autoComplete.java
-                            .getDeclaredConstructor()
-                            .newInstance(),
+                    autoComplete = option.autoComplete,
                 )
             }.toList()
 
@@ -337,16 +318,6 @@ internal object CommandDispatcher {
         aliasMap["$prefix${commandMeta.name}".lowercase()] = commandMeta
         commandMeta.aliases.forEach { alias ->
             aliasMap["$prefix$alias".lowercase()] = commandMeta
-        }
-    }
-
-    private fun registerAutoCompleteOptions(commandMeta: CommandMeta) {
-        val optionsMap =
-            commandMeta.args
-                .filter { it.autoComplete != NoAutoComplete }
-                .associateBy { it.name.lowercase() }
-        if (optionsMap.isNotEmpty()) {
-            autoCompleteOptionsMap[commandMeta.name.lowercase()] = optionsMap
         }
     }
 
@@ -457,22 +428,6 @@ internal object CommandDispatcher {
                 commandGroupName = command.instance.javaClass.name,
                 cause = e.cause ?: e,
             )
-        }
-    }
-
-    internal fun handleAutocomplete(event: CommandAutoCompleteInteractionEvent) {
-        val option =
-            autoCompleteOptionsMap[event.name]?.get(event.focusedOption.name) ?: run {
-                event.replyChoices().queue()
-                return
-            }
-
-        val results = option.autoComplete.handle(event)
-
-        if (results.isEmpty()) {
-            event.replyChoices().queue()
-        } else {
-            event.replyChoiceStrings(results).queue()
         }
     }
 

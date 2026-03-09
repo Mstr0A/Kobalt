@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.a0.kobalt.bots.base
 
 import com.a0.kobalt.bots.sharded.KShardedBot
@@ -6,21 +8,13 @@ import com.a0.kobalt.commands.CommandGroup
 import com.a0.kobalt.commands.CommandMeta
 import com.a0.kobalt.dispatcher.CommandDispatcher
 import com.a0.kobalt.dispatcher.EventWaiter
-import com.a0.kobalt.exceptions.ButtonActionFailed
-import com.a0.kobalt.exceptions.ButtonActionNotFound
-import com.a0.kobalt.exceptions.ButtonException
-import com.a0.kobalt.exceptions.ButtonExists
-import com.a0.kobalt.exceptions.CommandException
-import com.a0.kobalt.exceptions.CommandFailed
-import com.a0.kobalt.exceptions.CommandNotFound
-import com.a0.kobalt.exceptions.KobaltException
+import com.a0.kobalt.exceptions.*
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -83,10 +77,6 @@ abstract class KBase(
         } catch (e: CommandException) {
             this.onInteractionError(event, e)
         }
-    }
-
-    override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
-        CommandDispatcher.handleAutocomplete(event)
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {

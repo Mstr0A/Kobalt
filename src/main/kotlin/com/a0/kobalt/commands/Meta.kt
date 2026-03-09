@@ -11,7 +11,7 @@ data class SlashOptionDetails(
     val required: Boolean,
     val type: OptionType,
     val choices: Set<String> = emptySet(),
-    val autoComplete: AutoCompleteHandler = NoAutoComplete,
+    val autoComplete: Boolean,
 )
 
 data class CommandMeta(
