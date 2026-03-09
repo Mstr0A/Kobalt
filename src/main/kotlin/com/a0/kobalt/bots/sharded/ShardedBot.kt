@@ -2,7 +2,6 @@ package com.a0.kobalt.bots.sharded
 
 import com.a0.kobalt.bots.base.KBase
 import com.a0.kobalt.commands.CommandType
-import com.a0.kobalt.commands.NoAutoComplete
 import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.audio.AudioModuleConfig
 import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
@@ -166,8 +165,8 @@ open class KShardedBot(
                         val optionData = OptionData(arg.type, arg.name, arg.description, arg.required)
 
                         when {
-                            arg.choices.isNotEmpty() -> arg.choices.forEach { optionData.addChoice(it, it.lowercase()) }
-                            arg.autoComplete != NoAutoComplete -> optionData.setAutoComplete(true)
+                            arg.choices.isNotEmpty() -> arg.choices.forEach { optionData.addChoice(it, it) }
+                            arg.autoComplete -> optionData.setAutoComplete(true)
                         }
                         slashData.addOptions(optionData)
                     }
