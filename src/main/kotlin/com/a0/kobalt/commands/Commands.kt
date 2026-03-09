@@ -3,6 +3,7 @@ package com.a0.kobalt.commands
 import com.a0.kobalt.bots.base.KBase
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import org.apache.commons.collections4.iterators.EmptyListIterator
@@ -83,9 +84,9 @@ annotation class SlashOption(
 )
 
 interface AutoCompleteHandler {
-    fun handle(event: GenericAutoCompleteInteractionEvent): List<String>
+    fun handle(event: CommandAutoCompleteInteractionEvent): List<String>
 }
 
 object NoAutoComplete : AutoCompleteHandler {
-    override fun handle(event: GenericAutoCompleteInteractionEvent): List<String> = emptyList()
+    override fun handle(event: CommandAutoCompleteInteractionEvent): List<String> = emptyList()
 }
