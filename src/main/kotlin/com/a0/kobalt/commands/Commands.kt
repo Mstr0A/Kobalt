@@ -2,7 +2,11 @@ package com.a0.kobalt.commands
 
 import com.a0.kobalt.bots.base.KBase
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import org.apache.commons.collections4.iterators.EmptyListIterator
+import kotlin.reflect.KClass
 
 // To inherit from to make sure all commands have access to the bot
 open class CommandGroup(
@@ -73,6 +77,15 @@ annotation class SlashOption(
     val name: String,
     val description: String = "No description provided",
     val required: Boolean = false,
-    val autoCompleteOptions: Array<String> = [],
     val type: OptionType,
+    val choices: Array<String> = [],
+    val autoComplete: KClass<out AutoCompleteHandler> = NoAutoComplete::class,
 )
+
+interface AutoCompleteHandler {
+    fun handle(event: GenericAutoCompleteInteractionEvent): List<String>
+}
+
+object NoAutoComplete : AutoCompleteHandler {
+    override fun handle(event: GenericAutoCompleteInteractionEvent): List<String> = emptyList()
+}

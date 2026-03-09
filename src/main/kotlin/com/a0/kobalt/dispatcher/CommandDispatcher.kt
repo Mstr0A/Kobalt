@@ -7,6 +7,7 @@ import com.a0.kobalt.commands.CommandGroup
 import com.a0.kobalt.commands.CommandMeta
 import com.a0.kobalt.commands.CommandType
 import com.a0.kobalt.commands.HybridCommand
+import com.a0.kobalt.commands.NoAutoComplete
 import com.a0.kobalt.commands.OnReadyCall
 import com.a0.kobalt.commands.PendingIntervalTask
 import com.a0.kobalt.commands.PendingTimedTask
@@ -315,7 +316,7 @@ internal object CommandDispatcher {
         logger.debug { "Registered hybrid command: ${annotation.name}" }
     }
 
-    private fun extractSlashOptions(method: KCallable<*>): MutableList<SlashOptionDetails> =
+    private fun extractSlashOptions(method: KCallable<*>): List<SlashOptionDetails> =
         method.annotations
             .filterIsInstance<SlashOption>()
             .map { option ->
@@ -323,10 +324,14 @@ internal object CommandDispatcher {
                     name = option.name.lowercase(),
                     description = option.description,
                     required = option.required,
-                    autoCompleteOptions = option.autoCompleteOptions.toSet(),
                     type = option.type,
+                    choices = option.choices.toSet(),
+                    autoComplete =
+                        option.autoComplete.objectInstance ?: option.autoComplete.java
+                            .getDeclaredConstructor()
+                            .newInstance(),
                 )
-            }.toMutableList()
+            }.toList()
 
     private fun registerAliases(commandMeta: CommandMeta) {
         aliasMap["$prefix${commandMeta.name}".lowercase()] = commandMeta
@@ -336,8 +341,13 @@ internal object CommandDispatcher {
     }
 
     private fun registerAutoCompleteOptions(commandMeta: CommandMeta) {
-        val optionsMap = commandMeta.args.associateBy { it.name.lowercase() }
-        autoCompleteOptionsMap[commandMeta.name.lowercase()] = optionsMap
+        val optionsMap =
+            commandMeta.args
+                .filter { it.autoComplete != NoAutoComplete }
+                .associateBy { it.name.lowercase() }
+        if (optionsMap.isNotEmpty()) {
+            autoCompleteOptionsMap[commandMeta.name.lowercase()] = optionsMap
+        }
     }
 
 // ////////////////////////////////////////////////  Task Registry  //////////////////////////////////////////////////
@@ -363,12 +373,14 @@ internal object CommandDispatcher {
         val timeDelaySet = timeDelayList.any { it != 0L }
         val runningTimesSet = runningTimes.isNotEmpty()
 
-        if (timeDelaySet && runningTimesSet) {
-            throw IllegalArgumentException("You can't use both time delays and set time at the same time!")
-        }
-
-        if (!timeDelaySet && !runningTimesSet) {
-            throw IllegalArgumentException("You must use either time delays and set time!")
+        if (timeDelaySet == runningTimesSet) {
+            throw IllegalArgumentException(
+                if (timeDelaySet) {
+                    "You can't use both time delays and set time at the same time!"
+                } else {
+                    "You must use either time delays or set time!"
+                },
+            )
         }
 
         if (timeDelaySet) {
@@ -380,7 +392,6 @@ internal object CommandDispatcher {
                     delayMillis = timeDelayList.sum(),
                 ),
             )
-            logger.debug { "Registered Task: $methodName" }
         } else {
             val parsedTimes = runningTimes.map { time -> LocalTime.parse(time) }.toTypedArray()
             pendingTimedTasksList.add(
@@ -391,8 +402,8 @@ internal object CommandDispatcher {
                     times = parsedTimes,
                 ),
             )
-            logger.debug { "Registered Task: $methodName" }
         }
+        logger.debug { "Registered Task: $methodName" }
     }
 
 // ////////////////////////////////////////////////  Get Commands  //////////////////////////////////////////////////
@@ -406,7 +417,7 @@ internal object CommandDispatcher {
     internal fun handlePrefixCommand(event: MessageReceivedEvent) {
         val splitContent = event.message.contentRaw.split(" ")
         val commandName = splitContent[0]
-        val command = findCommand(commandName) ?: throw CommandNotFound(commandName = commandName)
+        val command = aliasMap[commandName.lowercase()] ?: throw CommandNotFound(commandName = commandName)
 
         if (command.requiredPermission != Permission.UNKNOWN &&
             event.member?.hasPermission(command.requiredPermission) == false
@@ -425,9 +436,6 @@ internal object CommandDispatcher {
             )
         }
     }
-
-    // handlePrefixCommand helper function
-    private fun findCommand(commandName: String): CommandMeta? = aliasMap[commandName.lowercase()]
 
     internal fun handleSlashCommand(event: SlashCommandInteractionEvent) {
         val command =
@@ -453,46 +461,28 @@ internal object CommandDispatcher {
     }
 
     internal fun handleAutocomplete(event: CommandAutoCompleteInteractionEvent) {
-        val commandName = event.name
-        val focusedOption = event.focusedOption.name
+        val option =
+            autoCompleteOptionsMap[event.name]?.get(event.focusedOption.name) ?: run {
+                event.replyChoices().queue()
+                return
+            }
 
-        val autoCompleteOptions = findFocusedOptionList(commandName, focusedOption)
+        val results = option.autoComplete.handle(event)
 
-        val filteredOptions =
-            autoCompleteOptions?.filter { it.startsWith(event.focusedOption.value, ignoreCase = true) }
-
-        if (filteredOptions.isNullOrEmpty()) {
+        if (results.isEmpty()) {
             event.replyChoices().queue()
         } else {
-            event.replyChoiceStrings(filteredOptions.toList()).queue()
+            event.replyChoiceStrings(results).queue()
         }
-    }
-
-    // handleAutocomplete helper function
-    private fun findFocusedOptionList(
-        commandName: String,
-        focusedOption: String,
-    ): Set<String>? {
-        val optionsMap = autoCompleteOptionsMap[commandName.lowercase()] ?: return null
-        val option = optionsMap[focusedOption.lowercase()] ?: return null
-        return option.autoCompleteOptions
     }
 
     internal fun handleButtonInteraction(event: ButtonInteractionEvent) {
         val buttonID = event.componentId
-        val button = KButtonRegistry.get(buttonID)
-
-        if (button == null) {
-            throw ButtonActionNotFound(buttonID)
-        } else {
-            try {
-                button.onClick(event)
-            } catch (e: Exception) {
-                throw ButtonActionFailed(
-                    buttonID = buttonID,
-                    cause = e.cause ?: e,
-                )
-            }
+        val button = KButtonRegistry.get(buttonID) ?: throw ButtonActionNotFound(buttonID)
+        try {
+            button.onClick(event)
+        } catch (e: Exception) {
+            throw ButtonActionFailed(buttonID = buttonID, cause = e.cause ?: e)
         }
     }
 }
