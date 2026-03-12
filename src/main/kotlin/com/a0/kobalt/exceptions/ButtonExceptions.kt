@@ -21,10 +21,3 @@ class ButtonActionFailed(
         message = "Failed to run button action with ID '$buttonID'",
         cause = cause,
     )
-
-class ButtonExists(
-    override val buttonID: String,
-) : ButtonException(
-        buttonID,
-        message = "Button with ID '$buttonID' already exists",
-    )

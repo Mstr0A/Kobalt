@@ -2,23 +2,19 @@
 
 package com.a0.kobalt.ui.buttons
 
-import com.a0.kobalt.exceptions.ButtonExists
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
 
-object KButtonRegistry {
+internal object KButtonRegistry {
     private val activeButtons = ConcurrentHashMap<String, KButton>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     fun register(button: KButton) {
-        val previous = activeButtons.putIfAbsent(button.id, button)
-        if (previous != null) {
-            throw ButtonExists(button.id)
-        }
+        activeButtons[button.id] = button
     }
 
-    fun unregister(buttonID: String) {
-        activeButtons.remove(buttonID)?.cancelTimeout()
+    fun unregister(button: KButton) {
+        activeButtons.remove(button.id)?.cancelTimeout()
     }
 
     fun get(buttonID: String): KButton? = activeButtons[buttonID]

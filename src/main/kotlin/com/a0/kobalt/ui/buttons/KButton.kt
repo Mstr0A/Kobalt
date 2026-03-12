@@ -21,7 +21,7 @@ abstract class KButton(
     val timeoutMillis: Long,
     val style: ButtonStyle = ButtonStyle.PRIMARY,
 ) {
-    val button: Button =
+    private val button: Button =
         when {
             url != null -> Button.link(url, label)
             label.isNotBlank() -> Button.of(style, id, label)
@@ -46,7 +46,7 @@ abstract class KButton(
             KButtonRegistry.launch {
                 delay(timeoutMillis)
                 onTimeout()
-                KButtonRegistry.unregister(id)
+                KButtonRegistry.unregister(this@KButton)
             }
     }
 

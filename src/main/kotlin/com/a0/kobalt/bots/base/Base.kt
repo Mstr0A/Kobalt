@@ -103,10 +103,6 @@ abstract class KBase(
             is ButtonActionFailed -> {
                 logger.error(exception) { "Button action with ID '${exception.buttonID}' failed" }
             }
-
-            is ButtonExists -> {
-                logger.error(exception) { "Button with ID '${exception.buttonID}' already exists" }
-            }
         }
     }
 
