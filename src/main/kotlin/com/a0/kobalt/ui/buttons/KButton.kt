@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import kotlin.time.Duration.Companion.milliseconds
 
 /*
 Instead of the user using normal JDA buttons
@@ -44,7 +45,7 @@ abstract class KButton(
         timeoutJob?.cancel()
         timeoutJob =
             KButtonRegistry.launch {
-                delay(timeoutMillis)
+                delay(timeoutMillis.milliseconds)
                 onTimeout()
                 KButtonRegistry.unregister(this@KButton)
             }

@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit
 import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
+import kotlin.time.Duration.Companion.milliseconds
 
 internal object CommandDispatcher {
     // commands list
@@ -127,7 +128,7 @@ internal object CommandDispatcher {
                         } catch (e: Exception) {
                             logger.error { "Error in task ${task.methodName}: ${e.message}" }
                         }
-                        delay(task.delayMillis)
+                        delay(task.delayMillis.milliseconds)
                     }
                 }
             intervalTaskJobs.add(job)
@@ -140,7 +141,7 @@ internal object CommandDispatcher {
                     val taskTimes = task.times
                     val closestTime = findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
                     val initialDelayTime = timeUntilTask(closestTime)
-                    delay(initialDelayTime)
+                    delay(initialDelayTime.milliseconds)
 
                     executeTask(task)
 
@@ -149,7 +150,7 @@ internal object CommandDispatcher {
                         delay(
                             timeUntilTask(
                                 findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first(),
-                            ),
+                            ).milliseconds,
                         )
                         executeTask(task)
                     }
