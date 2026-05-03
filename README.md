@@ -10,13 +10,11 @@
 
 > **Note: Kobalt is still in its early stages, and there are a few things to keep in mind**:
 >
-> * Kobalt is **not yet available on Maven Central** – please follow the [Installation](#Installation) instructions to
-    get started.
-> * **Documentation is currently missing**, but it's on the roadmap.
-> * **JDA API support is not complete yet.** I'm actively working on it, but since this is still a **solo project**,
-    progress can be a bit slow. I'm planning to build a team in the future to help move things along.
+> * Kobalt is **not yet available on Maven Central** - please follow the [Installation](#Installation) instructions to get started.
+> * **Documentation is available** at [kobalt.readthedocs.io](https://kobalt.readthedocs.io) - shipped ahead of v0.0.4. The docs currently cover bots, commands, the event waiter, and extending the bot. `KButton` and its lifecycle system are not yet documented, and other Discord UI components are planned but have no set timeline.
+> * **JDA API support is not complete yet.** I'm actively working on it, but since this is still a **solo project**, progress can be a bit slow. I'm planning to build a team in the future to help move things along.
 >
-> If you're interested in contributing or helping out, feel free to reach out here at kobalt@ameensonjuq.com!
+> If you're interested in contributing or helping out, feel free to reach out here at info@ameensonjuq.com!
 
 ---
 
@@ -37,7 +35,7 @@
 | Feature                   | Description                                                                                              |
 |---------------------------|----------------------------------------------------------------------------------------------------------|
 | Annotation-based Commands | Inspired by [discord.py](https://github.com/Rapptz/discord.py), create commands with simple annotations. |
-| Slash Commands            | Full support for Discord’s modern slash command interface.                                               |
+| Slash Commands            | Full support for Discord's modern slash command interface.                                               |
 | Event-Driven Framework    | React to real-time events with an efficient, type-safe API.                                              |
 | Smart Error Handling      | Built-in utilities to gracefully manage and log runtime errors.                                          |
 | Modular & Scalable        | Easily add or remove modules as your bot grows.                                                          |
@@ -47,19 +45,19 @@
 
 ## Installation
 
-   Kobalt is available on jitpack.io, and you can add it like this:
+Kobalt is available on jitpack.io, and you can add it like this:
 
-   ```kt
-   // build.gradle.kts
-    repositories {
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") } // Add the jitpack.io repo
-    }
-    
-    dependencies {
-        implementation("com.github.Mstr0A:Kobalt:VERSION_NUMBER") // You can change this to any version available in releases
-   }
-   ```
+```kt
+// build.gradle.kts
+repositories {
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") } // Add the jitpack.io repo
+}
+
+dependencies {
+    implementation("com.github.Mstr0A:Kobalt:VERSION_NUMBER") // You can change this to any version available in releases
+}
+```
 
 ---
 
@@ -104,8 +102,7 @@ fun main() {
 }
 ```
 
-Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and discord account ID, and adjust the prefix as desired.
-
+Replace `YOUR_TOKEN` and `YOUR_ID` with your actual bot token and Discord account ID, and adjust the prefix as desired.
 
 ---
 
@@ -117,9 +114,10 @@ You can get help at our [Discord Server](https://discord.gg/vva8r55sas) in the h
 
 ## Roadmap
 
-* 📚 **Documentation (v0.0.4)** – Comprehensive guides and API reference
-* ✅ **Full JDA Coverage (v0.0.5)** – Implement all JDA endpoints
-* 👥 **Community Team (v0.0.6)** – Onboard contributors and maintainers
+* 📚 **Documentation (v0.0.4)** - Core docs shipped early covering bots, commands, event waiter, and bot extension. `KButton` documentation still pending.
+* 🖱️ **UI Layer** - `KButton` documentation and additional Discord UI components. No set timeline.
+* ✅ **Full JDA Coverage (v0.0.5)** - Implement all JDA endpoints
+* 👥 **Community Team (v0.0.6)** - Onboard contributors and maintainers
 
 ---
 
