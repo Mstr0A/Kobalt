@@ -137,8 +137,14 @@ abstract class KBase(
                             .slash(
                                 slashCommand.name,
                                 slashCommand.description,
-                            ).setIntegrationTypes(*slashCommand.integrationTypes)
-                            .setContexts(*slashCommand.contextTypes)
+                            ).apply {
+                                if (slashCommand.integrationTypes.isNotEmpty()) {
+                                    setIntegrationTypes(*slashCommand.integrationTypes)
+                                }
+                                if (slashCommand.contextTypes.isNotEmpty()) {
+                                    setContexts(*slashCommand.contextTypes)
+                                }
+                            }
 
                     slashCommand.args.forEach { arg ->
                         // A quick guard to make sure not both are set

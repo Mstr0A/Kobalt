@@ -29,8 +29,6 @@ dependencies {
 
 Replace `VERSION` with any release available on [JitPack](https://jitpack.io/#Mstr0A/Kobalt).
 
-> **Note:** Kobalt is not yet available on Maven Central.
-
 ---
 
 ## Your First Bot

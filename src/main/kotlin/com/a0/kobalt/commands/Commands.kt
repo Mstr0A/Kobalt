@@ -25,8 +25,8 @@ annotation class Command(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
-    val integrationTypes: Array<IntegrationType> = [IntegrationType.GUILD_INSTALL],
-    val contextTypes: Array<InteractionContextType> = [InteractionContextType.GUILD],
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define a slash command
@@ -41,8 +41,8 @@ annotation class SlashCommand(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
-    val integrationTypes: Array<IntegrationType> = [IntegrationType.GUILD_INSTALL],
-    val contextTypes: Array<InteractionContextType> = [InteractionContextType.GUILD],
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define a standard and a slash command
@@ -58,8 +58,8 @@ annotation class HybridCommand(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
-    val integrationTypes: Array<IntegrationType> = [IntegrationType.GUILD_INSTALL],
-    val contextTypes: Array<InteractionContextType> = [InteractionContextType.GUILD],
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define looping tasks

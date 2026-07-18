@@ -64,6 +64,10 @@ fun greet(event: MessageReceivedEvent) {
 | `requiredPermission` | `Permission` | `Permission.UNKNOWN` | Discord permission required to run the command |
 | `permissionDeniedMessage` | `String` | `"You don't have the permission to use this command"` | Message sent when permission check fails |
 | `hidden` | `Boolean` | `false` | Hides the command from `getCommands()` |
+| `integrationTypes` | `Array<IntegrationType>` | `[IntegrationType.GUILD_INSTALL]` | Where the bot can be installed — see [User-Installed Apps](#user-installed-apps) |
+| `contextTypes` | `Array<InteractionContextType>` | `[InteractionContextType.GUILD]` | Where the command can be used — see [User-Installed Apps](#user-installed-apps) |
+
+> **Note:** `integrationTypes` and `contextTypes` have no effect on prefix commands. Prefix commands only work in guilds where the bot is installed. For user-installed app support, use slash or hybrid commands.
 
 ---
 
@@ -154,6 +158,53 @@ private fun getInfo(): String = "Some info here"
 ```
 
 Hybrid commands support the same parameters as prefix commands including `aliases`.
+
+---
+
+## User-Installed Apps
+
+By default, all commands are only available in guilds where the bot is installed. You can expand this using `integrationTypes` and `contextTypes` to support user-installed apps — bots installed directly to a user's account rather than a server.
+
+```kotlin
+@SlashCommand(
+    name = "ping",
+    description = "Check the bot's latency",
+    integrationTypes = [IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL],
+    contextTypes = [InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL],
+)
+fun ping(event: SlashCommandInteractionEvent) {
+    event.reply("Pong! (${event.jda.gatewayPing}ms)").queue()
+}
+```
+
+### integrationTypes
+
+Controls where the bot can be installed:
+
+| Value | Description |
+|---|---|
+| `IntegrationType.GUILD_INSTALL` | Bot is installed to a server (default) |
+| `IntegrationType.USER_INSTALL` | Bot is installed to a user's account |
+
+### contextTypes
+
+Controls where the command can be used:
+
+| Value | Description |
+|---|---|
+| `InteractionContextType.GUILD` | Inside a server (default) |
+| `InteractionContextType.BOT_DM` | In a DM with the bot |
+| `InteractionContextType.PRIVATE_CHANNEL` | In a DM or group DM between users |
+
+### Traps to Avoid
+
+When writing commands that run outside of guilds:
+
+- **Do not** use `.asTextChannel()` — it will crash in DMs. Use `MessageChannel` or `.channel` instead.
+- **Always** check `event.isFromGuild()` before accessing `.guild` or `.member` — they are null outside of guilds.
+- Bulk or destructive actions like history retrieval or mass deletes will fail with `403 Forbidden` if the bot is not a guild member.
+
+> **Note:** `integrationTypes` and `contextTypes` only apply to slash and hybrid commands. Prefix commands are not supported in user-installed contexts.
 
 ---
 
