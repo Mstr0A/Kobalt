@@ -6,6 +6,7 @@ import com.a0.kobalt.bots.sharded.KShardedBot
 import com.a0.kobalt.bots.standard.KBot
 import com.a0.kobalt.commands.CommandGroup
 import com.a0.kobalt.commands.CommandMeta
+import com.a0.kobalt.commands.CommandType
 import com.a0.kobalt.dispatcher.CommandDispatcher
 import com.a0.kobalt.dispatcher.EventWaiter
 import com.a0.kobalt.exceptions.*
@@ -20,6 +21,9 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.lang.reflect.MalformedParametersException
 import java.util.concurrent.TimeUnit
@@ -120,6 +124,41 @@ abstract class KBase(
     }
 
     fun getCommands(): List<CommandMeta> = CommandDispatcher.getCommands().toList()
+
+    fun getCommandsToAdd(): List<SlashCommandData> {
+        val slashCommandsList = CommandDispatcher.getCommands()
+
+        val commandsToAdd =
+            slashCommandsList
+                .filter { it.type != CommandType.PREFIX }
+                .map { slashCommand ->
+                    val slashData =
+                        Commands
+                            .slash(
+                                slashCommand.name,
+                                slashCommand.description,
+                            ).setIntegrationTypes(*slashCommand.integrationTypes)
+                            .setContexts(*slashCommand.contextTypes)
+
+                    slashCommand.args.forEach { arg ->
+                        // A quick guard to make sure not both are set
+                        require(!(arg.choices.isNotEmpty() && arg.autoComplete)) {
+                            "Arg '${arg.name}' cannot have both choices and autoComplete enabled"
+                        }
+
+                        val optionData = OptionData(arg.type, arg.name, arg.description, arg.required)
+
+                        when {
+                            arg.choices.isNotEmpty() -> arg.choices.forEach { optionData.addChoice(it, it) }
+                            arg.autoComplete -> optionData.setAutoComplete(true)
+                        }
+                        slashData.addOptions(optionData)
+                    }
+                    slashData
+                }
+
+        return commandsToAdd
+    }
 
     inline fun <reified T : Event> waitFor(
         noinline condition: (T) -> Boolean,
