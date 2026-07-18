@@ -7,7 +7,7 @@
 
 JDA is powerful, but it comes with a lot of ceremony. Command definitions live separately from their handlers, aliases require manual string matching, and something as common as waiting for a user reaction means rolling your own `ConcurrentHashMap` and `ScheduledExecutorService` - or pulling in an external library.
 
-Kobalt fixes that. Commands, options, choices, and aliases all live together on the function that handles them. The event waiter is built in. And your bot stays readable as it grows.
+Kobalt fixes that. Commands, options, choices, and aliases all live together on the function that handles them. The event waiter is built in. User-installed apps are supported out of the box. And your bot stays readable as it grows.
 
 ---
 ## A Taste
@@ -101,6 +101,26 @@ Same result. Less noise.
 
 ---
 
+## User-Installed Apps
+
+Kobalt supports user-installed apps out of the box. Set `integrationTypes` and `contextTypes` on any slash or hybrid command to let users install your bot directly to their account and use it anywhere — DMs, group chats, or servers the bot isn't in.
+
+```kotlin
+@SlashCommand(
+    name = "ping",
+    description = "Check the bot's latency",
+    integrationTypes = [IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL],
+    contextTypes = [InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL],
+)
+fun ping(event: SlashCommandInteractionEvent) {
+    event.reply("Pong! (${event.jda.gatewayPing}ms)").queue()
+}
+```
+
+See [Commands](commands.md#user-installed-apps) for the full guide.
+
+---
+
 ## Installation
 
 Add JitPack to your repositories and Kobalt to your dependencies:
@@ -123,4 +143,4 @@ dependencies {
 
 - [Getting Started](getting-started.md) - build your first bot in minutes
 - [Bots](bots.md) - autocomplete, command introspection, and more
-- [Commands](commands.md) - prefix commands, slash commands, options, and choices
+- [Commands](commands.md) - prefix commands, slash commands, options, choices, and user-installed apps

@@ -1,7 +1,6 @@
 package com.a0.kobalt.bots.standard
 
 import com.a0.kobalt.bots.base.KBase
-import com.a0.kobalt.commands.CommandType
 import com.a0.kobalt.dispatcher.CommandDispatcher
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -9,8 +8,6 @@ import net.dv8tion.jda.api.audio.AudioModuleConfig
 import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor
-import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.TimeUnit
 
@@ -147,25 +144,7 @@ open class KBot(
      * Registers and syncs all the slash commands available
      */
     override fun syncSlashCommands() {
-        val slashCommandsList = CommandDispatcher.getCommands()
-
-        val commandsToAdd =
-            slashCommandsList
-                .filter { it.type != CommandType.PREFIX }
-                .map { slashCommand ->
-                    val slashData = Commands.slash(slashCommand.name, slashCommand.description)
-
-                    slashCommand.args.forEach { arg ->
-                        val optionData = OptionData(arg.type, arg.name, arg.description, arg.required)
-
-                        when {
-                            arg.choices.isNotEmpty() -> arg.choices.forEach { optionData.addChoice(it, it) }
-                            arg.autoComplete -> optionData.setAutoComplete(true)
-                        }
-                        slashData.addOptions(optionData)
-                    }
-                    slashData
-                }
+        val commandsToAdd = getCommandsToAdd()
 
         management
             .updateCommands()

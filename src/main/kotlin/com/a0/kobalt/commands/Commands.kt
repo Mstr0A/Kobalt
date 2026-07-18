@@ -2,6 +2,8 @@ package com.a0.kobalt.commands
 
 import com.a0.kobalt.bots.base.KBase
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 // To inherit from to make sure all commands have access to the bot
@@ -23,6 +25,8 @@ annotation class Command(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define a slash command
@@ -37,6 +41,8 @@ annotation class SlashCommand(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define a standard and a slash command
@@ -52,6 +58,8 @@ annotation class HybridCommand(
     val requiredPermission: Permission = Permission.UNKNOWN,
     val hidden: Boolean = false,
     val permissionDeniedMessage: String = "You don't have the permission to use this command",
+    val integrationTypes: Array<IntegrationType> = [],
+    val contextTypes: Array<InteractionContextType> = [],
 )
 
 // Used to define looping tasks

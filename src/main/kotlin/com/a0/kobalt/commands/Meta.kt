@@ -1,6 +1,8 @@
 package com.a0.kobalt.commands
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.lang.invoke.MethodHandle
 import java.time.LocalTime
@@ -23,6 +25,8 @@ data class CommandMeta(
     val requiredPermission: Permission,
     val hidden: Boolean,
     val permissionDeniedMessage: String,
+    val integrationTypes: Array<IntegrationType>,
+    val contextTypes: Array<InteractionContextType>,
     val args: List<SlashOptionDetails>,
     val type: CommandType,
     val methodHandle: MethodHandle,
