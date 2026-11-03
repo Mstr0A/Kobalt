@@ -139,7 +139,8 @@ internal object CommandDispatcher {
             val job =
                 scope.launch {
                     val taskTimes = task.times
-                    val closestTime = findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
+                    val closestTime =
+                        findClosestTime(taskTimes, LocalTime.now(ZoneId.of(timezone))) ?: taskTimes.first()
                     val initialDelayTime = timeUntilTask(closestTime)
                     delay(initialDelayTime.milliseconds)
 
@@ -397,9 +398,18 @@ internal object CommandDispatcher {
         val commandName = splitContent[0]
         val command = aliasMap[commandName.lowercase()] ?: throw CommandNotFound(commandName = commandName)
 
-        if (command.requiredPermission != Permission.UNKNOWN &&
-            event.member?.hasPermission(command.requiredPermission) == false
-        ) {
+        val member = event.member
+        val denied =
+            command.requiredPermission != Permission.UNKNOWN &&
+                (
+                    member == null ||
+                        !member.hasPermission(
+                            event.channel.asGuildMessageChannel(),
+                            command.requiredPermission,
+                        )
+                )
+
+        if (denied) {
             event.channel.sendMessage(command.permissionDeniedMessage).queue()
             return
         }
@@ -420,9 +430,18 @@ internal object CommandDispatcher {
             slashCommandsMap[event.name.lowercase()]
                 ?: throw CommandNotFound(commandName = event.name)
 
-        if (command.requiredPermission != Permission.UNKNOWN &&
-            event.member?.hasPermission(command.requiredPermission) == false
-        ) {
+        val member = event.member
+        val denied =
+            command.requiredPermission != Permission.UNKNOWN &&
+                (
+                    member == null ||
+                        !member.hasPermission(
+                            event.channel.asGuildMessageChannel(),
+                            command.requiredPermission,
+                        )
+                )
+
+        if (denied) {
             event.reply(command.permissionDeniedMessage).setEphemeral(true).queue()
             return
         }
