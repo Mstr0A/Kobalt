@@ -1,7 +1,7 @@
 [versions]
-kotlin = "2.3.20"
-jda = "6.5.0"
-slf4j = "2.0.17"
+kotlin = "2.4.21"
+jda = "6.7.0"
+slf4j = "2.0.20"
 logback = "1.5.38"
 kotlin-logging = "8.0.4"
 kotlinx-coroutines = "1.11.0"

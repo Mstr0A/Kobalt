@@ -85,7 +85,7 @@ class EventWaiter(
         threadPool.shutdown()
     }
 
-    private class WaitingEvent<T : Event>(
+    class WaitingEvent<T : GenericEvent>(
         val condition: Predicate<T>,
         val action: Consumer<T>,
     )
